@@ -5,7 +5,7 @@
       <paths name="eso.vse.cz">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/semestralka/" local="$PROJECT_DIR$" web="/semestralka/" />
           </mappings>
         </serverdata>
       </paths>

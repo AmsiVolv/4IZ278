@@ -1,3 +1,6 @@
+<?php
+require_once './inc/header.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,117 +22,6 @@
 </head>
 
 <body>
-  <!-- Preloader -->
-  <div id="preloader">
-    <div class="preload-content">
-      <div id="dento-load"></div>
-    </div>
-  </div>
-
-  <!-- ***** Header Area Start ***** -->
-  <header class="header-area">
-    <!-- Top Header Area -->
-    <div class="top-header-area">
-      <div class="container h-100">
-        <div class="row h-100 align-items-center">
-          <!-- Top Content -->
-          <div class="col-6 col-md-9 col-lg-8">
-            <div class="top-header-content">
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="28 Jackson Street, Chicago, 7788569 USA"><i class="fa fa-map-marker"></i> <span>28 Jackson Street, Chicago, 7788569 USA</span></a>
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="info.dento@gmail.com"><i class="fa fa-envelope"></i> <span>info.dento@gmail.com</span></a>
-            </div>
-          </div>
-          <!-- Top Header Social Info -->
-          <div class="col-6 col-md-3 col-lg-4">
-            <div class="top-header-social-info text-right">
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i class="fa fa-facebook"></i></a>
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i class="fa fa-twitter"></i></a>
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Google Plus"><i class="fa fa-google-plus"></i></a>
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Linkedin"><i class="fa fa-linkedin"></i></a>
-              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Pinterest"><i class="fa fa-pinterest"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Top Header End -->
-
-    <!-- Main Header Start -->
-    <div class="main-header-area">
-      <div class="classy-nav-container breakpoint-off">
-        <div class="container">
-          <!-- Classy Menu -->
-          <nav class="classy-navbar justify-content-between" id="dentoNav">
-
-            <!-- Logo -->
-            <a class="nav-brand" href="index.html"><img src="./img/core-img/logo.png" alt=""></a>
-
-            <!-- Navbar Toggler -->
-            <div class="classy-navbar-toggler">
-              <span class="navbarToggler"><span></span><span></span><span></span></span>
-            </div>
-
-            <!-- Menu -->
-            <div class="classy-menu">
-
-              <!-- Close Button -->
-              <div class="classycloseIcon">
-                <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
-              </div>
-
-              <!-- Nav Start -->
-              <div class="classynav">
-                <ul id="nav">
-                  <li><a href="index.html">Home</a></li>
-                  <li><a href="#">Pages</a>
-                    <ul class="dropdown">
-                      <li><a href="index.html">- Home</a></li>
-                      <li><a href="about.html">- About Us</a></li>
-                      <li><a href="service.html">- Service</a></li>
-                      <li><a href="pricing.html">- Pricing</a></li>
-                      <li><a href="blog.html">- Blog</a></li>
-                      <li><a href="blog-details.html">- Blog Details</a></li>
-                      <li><a href="contact.html">- Contact</a></li>
-                      <li><a href="#">- Dropdown</a>
-                        <ul class="dropdown">
-                          <li><a href="#">- Dropdown Item</a></li>
-                          <li><a href="#">- Dropdown Item</a>
-                            <ul class="dropdown">
-                              <li><a href="#">- Even Dropdown</a></li>
-                              <li><a href="#">- Even Dropdown</a></li>
-                              <li><a href="#">- Even Dropdown</a></li>
-                              <li><a href="#">- Even Dropdown</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="#">- Dropdown Item</a></li>
-                          <li><a href="#">- Dropdown Item</a></li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </li>
-                  <li><a href="about.html">About</a></li>
-                  <li><a href="service.html">Service</a></li>
-                  <li><a href="pricing.html">Pricing</a></li>
-                  <li><a href="#">Blog</a>
-                    <ul class="dropdown">
-                      <li><a href="blog.html">- Blog</a></li>
-                      <li><a href="blog-details.html">- Blog Details</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="./contact.html">Contact</a></li>
-                </ul>
-              </div>
-              <!-- Nav End -->
-            </div>
-
-            <!-- Booking Now Button -->
-            <a href="#" class="btn dento-btn booking-btn">Booking Now</a>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </header>
-  <!-- ***** Header Area End ***** -->
 
   <!-- ***** Welcome Area Start ***** -->
   <section class="welcome-area">
@@ -744,7 +636,7 @@
         <!-- Single Footer Widget -->
         <div class="col-12 col-sm-6 col-lg-4">
           <div class="single-footer-widget">
-            <a href="./index.html" class="d-block mb-4"><img src="./img/core-img/logo.png" alt=""></a>
+            <a href="index.php" class="d-block mb-4"><img src="./img/core-img/logo.png" alt=""></a>
             <p>Etiam sutor risus, dapibus act elefend katen, lacinia sitamet denim. Mauris sagittis kansa interdum dignissim.</p>
             <div class="footer-contact">
               <p><i class="icon_pin"></i> 28 Jackson Street, Chicago, 7788569 USA</p>

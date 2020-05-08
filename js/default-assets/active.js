@@ -8,6 +8,7 @@
 
   dento_window.on('load', function() {
     $('#preloader').fadeOut('1000', function() {
+      console.log('1');
       $(this).remove();
     });
   });
