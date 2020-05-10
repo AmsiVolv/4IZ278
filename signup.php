@@ -1,14 +1,16 @@
 <?php
 #nacteme hlavicku
-include './inc/header.php';
+$pageTitle = 'Registration page';
+include './inc/user.php';
+require_once 'oauth.php';
 
-
-$errors = [];
 if (!empty($_SESSION['user_id'])){
     //uživatel už je přihlášený, nemá smysl, aby se registroval
     header('Location: index.php');
     exit();
 }
+
+$errors = [];
 
 if(!empty($_POST)){
     $name = trim(@$_POST['name']);
@@ -21,13 +23,13 @@ if(!empty($_POST)){
     #region kontrola prijmeni
     $surname = trim(@$_POST['surname']);
     if (empty($surname)){
-        $errors['surnmae']='Surname is not correct.';
+        $errors['surname']='Surname is not correct.';
     }
     #endregion kontrola prijmeni
     #region kontrola emailu
     $email=trim(@$_POST['email']);
     if (!filter_var($email,FILTER_VALIDATE_EMAIL)){
-        $errors['name']='This email adress is not correct.';
+        $errors['email']='This email adress is not correct.';
     }else{
         //kontrola, jestli již není e-mail registrovaný
         $mailQuery=$db->prepare('SELECT * FROM users_sem WHERE email=:email LIMIT 1;');
@@ -35,7 +37,7 @@ if(!empty($_POST)){
             ':email'=>$email
         ]);
         if ($mailQuery->rowCount()>0){
-            $errors['name']='This email address already exist.';
+            $errors['email']='This email address already exist.';
         }
     }
     #endregion kontrola emailu
@@ -65,17 +67,16 @@ if(!empty($_POST)){
                 ':email'=> $email,
                 ':password'=>$password
         ]);
+        //uživatele rovnou přihlásíme
+        $_SESSION['user_id']=$db->lastInsertId();
+        $_SESSION['user_name']=$name;
+        //přesměrování na homepage
+        header('Location: index.php');
+        exit();
     }
 
-    //uživatele rovnou přihlásíme
-    $_SESSION['user_id']=$db->lastInsertId();
-    $_SESSION['user_name']=$name;
-
-    //přesměrování na homepage
-    header('Location: index.php');
-//    exit();
 }
-
+include './inc/header.php';
 ?>
 
     <div class="col-12 col-md-12">
@@ -88,35 +89,53 @@ if(!empty($_POST)){
             <form action="signup.php" method="post">
                 <div class="row justify-content-md-center">
                     <div class="col-lg-2  mr-1">
-                        <input type="text" name="name" id="name" class="form-control mb-30" placeholder="Your Name" required value="<?php echo htmlspecialchars(@$_POST['name']);?>">
+                        <?php
+                        echo (!empty($errors['name'])?'<div class="invalid-feedback display_inv text-center">'.$errors['name'].'</div>':'');
+                        ?>
+                        <input type="text" name="name" id="name" class="form-control mb-30 <?php echo ($errors['name']?'is-invalid':''); ?>" placeholder="Your Name" required value="<?php echo htmlspecialchars(@$_POST['name']);?>">
                     </div>
                     <div class="col-lg-2">
-                        <input type="text" name="surname" id="surname" class="form-control mb-30" placeholder="Your Surname" required value="<?php echo htmlspecialchars(@$_POST['surname']);?>">
+                        <?php
+                        echo (!empty($errors['surname'])?'<div class="invalid-feedback display_inv text-center">'.$errors['surname'].'</div>':'');
+                        ?>
+                        <input type="text" name="surname" id="surname" class="form-control mb-30 <?php echo ($errors['surname']?'is-invalid':''); ?>" placeholder="Your Surname" required value="<?php echo htmlspecialchars(@$_POST['surname']);?>">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-lg-4">
-                        <input type="email" name="email" id="email" class="form-control mb-30" placeholder="Your Email" required value="<?php echo htmlspecialchars(@$_POST['email']);?>">
+                        <?php
+                        echo (!empty($errors['email'])?'<div class="invalid-feedback display_inv text-center">'.$errors['email'].'</div>':'');
+                        ?>
+                        <input type="email" name="email" id="email" class="form-control mb-30 <?php echo ($errors['email']?'is-invalid':''); ?>" placeholder="Your Email" required value="<?php echo htmlspecialchars(@$_POST['email']);?>">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-lg-4">
-                        <input type="tel" name="phone"  id="phone" class="form-control mb-30" placeholder="Phone number: +420111222333" pattern="[+420]{4}[0-9]{9}" required value="<?php echo htmlspecialchars(@$_POST['phone']);?>">
+                        <?php
+                        echo (!empty($errors['phone'])?'<div class="invalid-feedback display_inv text-center">'.$errors['phone '].'</div>':'');
+                        ?>
+                        <input type="tel" name="phone"  id="phone" class="form-control mb-30 <?php echo ($errors['phone']?'is-invalid':''); ?>" placeholder="Phone number: +420111222333" pattern="[+420]{4}[0-9]{9}" required value="<?php echo htmlspecialchars(@$_POST['phone']);?>">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-lg-4">
-                        <input type="password" name="password" id="password" class="form-control mb-30" placeholder="Password" required value="">
+                        <?php
+                        echo (!empty($errors['password'])?'<div class="invalid-feedback display_inv text-center">'.$errors['password'].'</div>':'');
+                        ?>
+                        <input type="password" name="password" id="password" class="form-control mb-30 <?php echo ($errors['password']?'is-invalid':''); ?>" placeholder="Password" required value="">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-lg-4">
-                        <input type="password" name="passwordTwo" id="passwordTwo" class="form-control mb-30" placeholder="Password" required value="">
+                        <input type="password" name="passwordTwo" id="passwordTwo" class="form-control mb-30 <?php echo ($errors['password']?'is-invalid':''); ?>" placeholder="Password" required value="">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-auto">
-                        <button type="submit" class="btn dento-btn">Send Message</button>
+                        <button type="submit" class="btn dento-btn">Registr now</button>
+                    </div>
+                    <div class="col-md-auto">
+                        <a href="<?php echo $auth_url?>" class="btn dento-btn btn-outline-warning">Registr via google</a>
                     </div>
                 </div>
             </form>

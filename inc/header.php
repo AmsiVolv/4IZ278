@@ -1,6 +1,3 @@
-<?php
-require_once 'user.php';
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +8,7 @@ require_once 'user.php';
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Title -->
-    <title>Dento - Dentist &amp; Medical HTML Template</title>
+    <title><?php echo (!empty($pageTitle)?$pageTitle.' - ':'')?>Dento</title>
 
     <!-- Favicon -->
     <link rel="icon" href="./img/core-img/favicon.ico">
@@ -43,14 +40,14 @@ require_once 'user.php';
                     </div>
                 </div>
                 <!-- Top Header Social Info -->
-                <div class="col-6 col-md-3 col-lg-4">
+                <div class="col-6 col-md-3 col-lg-4 text-right">
                     <div>      <?php
                         if (!empty($_SESSION['user_id'])){
                             echo '<strong>'.htmlspecialchars($_SESSION['user_name']).'</strong>';
                             echo ' - ';
-                            echo '<a href="logout.php">odhlásit se</a>';
+                            echo '<a href="logout.php">Log out</a>';
                         }else{
-                            echo '<a href="login.php">přihlásit se</a>';
+                            echo '<a href="login.php">Log in</a>';
                         }
                         ?>
                     </div>
@@ -68,7 +65,7 @@ require_once 'user.php';
                 <nav class="classy-navbar justify-content-between" id="dentoNav">
 
                     <!-- Logo -->
-                    <a class="nav-brand" href="../index.php"><img src="./img/core-img/logo.png" alt=""></a>
+                    <a class="nav-brand" href="./index.php"><img src="./img/core-img/logo.png" alt=""></a>
 
                     <!-- Navbar Toggler -->
                     <div class="classy-navbar-toggler">
@@ -86,43 +83,17 @@ require_once 'user.php';
                         <!-- Nav Start -->
                         <div class="classynav">
                             <ul id="nav">
-                                <li><a href="../index.php">Home</a></li>
-                                <li><a href="#">Pages</a>
-                                    <ul class="dropdown">
-                                        <li><a href="../index.php">- Home</a></li>
-                                        <li><a href="about.html">- About Us</a></li>
-                                        <li><a href="service.html">- Service</a></li>
-                                        <li><a href="pricing.html">- Pricing</a></li>
-                                        <li><a href="blog.html">- Blog</a></li>
-                                        <li><a href="blog-details.html">- Blog Details</a></li>
-                                        <li><a href="contact.html">- Contact</a></li>
-                                        <li><a href="#">- Dropdown</a>
-                                            <ul class="dropdown">
-                                                <li><a href="#">- Dropdown Item</a></li>
-                                                <li><a href="#">- Dropdown Item</a>
-                                                    <ul class="dropdown">
-                                                        <li><a href="#">- Even Dropdown</a></li>
-                                                        <li><a href="#">- Even Dropdown</a></li>
-                                                        <li><a href="#">- Even Dropdown</a></li>
-                                                        <li><a href="#">- Even Dropdown</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li><a href="#">- Dropdown Item</a></li>
-                                                <li><a href="#">- Dropdown Item</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a href="about.html">About</a></li>
-                                <li><a href="service.html">Service</a></li>
-                                <li><a href="pricing.html">Pricing</a></li>
+                                <li><a href="./index.php">Home</a></li>
+                                <li><a href="./about.php">About</a></li>
+                                <li><a href="./service.php">Service</a></li>
+                                <li><a href="./pricing.php">Pricing</a></li>
                                 <li><a href="#">Blog</a>
                                     <ul class="dropdown">
-                                        <li><a href="blog.html">- Blog</a></li>
-                                        <li><a href="blog-details.html">- Blog Details</a></li>
+                                        <li><a href="./blog.php">- Blog</a></li>
+                                        <li><a href="./blog-details.php">- Blog Details</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="./contact.html">Contact</a></li>
+                                <li><a href="./contact.php">Contact</a></li>
                             </ul>
                         </div>
                         <!-- Nav End -->
@@ -130,6 +101,7 @@ require_once 'user.php';
 
                     <!-- Booking Now Button -->
                     <a href="#" class="btn dento-btn booking-btn">Booking Now</a>
+                    <a href="./signup.php" class="btn dento-btn booking-btn registr">Registr now</a>
                 </nav>
             </div>
         </div>

@@ -438,6 +438,26 @@ ul {
       background-color: #ffffff;
       color: #00aeef !important; }
 
+.dento-btn.booking-btn.registr {
+  color: #00aeef !important;
+  background-color: #FFFFFF;
+  font-weight: 600;
+  min-width: 140px;
+  height: 40px;
+  line-height: 36px;
+  font-size: 12px;
+}
+
+.dento-btn.booking-btn.registr:focus, .dento-btn.booking-btn.registr:hover{
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #00aeef;
+  color: #FFFFFF !important; }
+
+.display_inv{
+  display: block;
+}
+
 .header-area {
   position: relative;
   z-index: 599;

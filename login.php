@@ -1,6 +1,8 @@
 <?php
 //načteme připojení k databázi a inicializujeme session
+$pageTitle = 'Login page';
 require_once 'inc/user.php';
+require_once 'oauth.php';
 
 if (!empty($_SESSION['user_id'])){
     //uživatel už je přihlášený, nemá smysl, aby se registroval
@@ -26,34 +28,50 @@ if (!empty($_POST)){
         }else{
             $errors=true;
         }
-
     }else{
         $errors=true;
     }
     #endregion zpracování formuláře
 }
 
-//vložíme do stránek patičku
-$pageTitle='Přihlášení uživatele';
 include 'inc/header.php';
 ?>
 
-    <h2>Přihlášení uživatele</h2>
-
-    <form method="post">
-        <div class="form-group">
-            <label for="email">E-mail:</label>
-            <input type="email" name="email" id="email" required class="form-control <?php echo ($errors?'is-invalid':''); ?>" value="<?php echo htmlspecialchars(@$_POST['email'])?>"/>
-            <?php
-            echo (!empty($errors['name'])?'<div class="invalid-feedback">Neplatná kombinace přihlašovacího e-mailu a hesla.</div>':'');
-            ?>
+<div class="col-12 col-md-12">
+    <!-- Section Heading -->
+    <div class="section-heading">
+        <h2>Login now</h2>
+        <div class="line"></div>
+    </div>
+    <!-- Form -->
+    <form action="login.php" method="post">
+        <?php
+            echo ($errors?'
+        <div class="row justify-content-md-center text-center">
+            <div class="col-lg-4">
+                <p>Wrong email and password combination</p>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="password">Heslo:</label>
-            <input type="password" name="password" id="password" required class="form-control <?php echo ($errors?'is-invalid':''); ?>" />
+            ':'');
+        ?>
+        <div class="row justify-content-md-center">
+            <div class="col-lg-4">
+                <input type="email" name="email" id="email" class="form-control mb-30 <?php echo ($errors?'is-invalid':''); ?>" placeholder="Your Email" required value="<?php echo htmlspecialchars(@$_POST['email']);?>">
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">přihlásit se</button>
-        <a href="registration.php" class="btn btn-light">registrovat se</a>
-        <a href="index.php" class="btn btn-light">zrušit</a>
+        <div class="row justify-content-md-center">
+            <div class="col-lg-4">
+                <input type="password" name="password" id="password" class="form-control mb-30 <?php echo ($errors?'is-invalid':''); ?>" placeholder="Password" required value="">
+            </div>
+        </div>
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <button type="submit" class="btn dento-btn">Login</button>
+            </div>
+            <div class="col-md-auto">
+                <a href="<?php echo $auth_url?>" class="btn dento-btn btn-outline-warning">Registr via google</a>
+            </div>
+        </div>
     </form>
+</div>
 
