@@ -1,3 +1,7 @@
+<?php
+require_once './inc/user.php';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 

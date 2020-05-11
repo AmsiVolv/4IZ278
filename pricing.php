@@ -1,6 +1,24 @@
 <?php
+$isAdmin = false;
 $pageTitle = 'Pricing page';
 include './inc/header.php';
+
+if (!empty($_REQUEST['status'])) {
+    alert('ID must be a number');
+}
+if (!empty($_REQUEST['range'])) {
+    alert('ID out of range');
+}
+#fce na zobrazeni chyb
+function alert($msg)
+{
+    echo "<script type='text/javascript'>alert('$msg');</script>";
+}
+#konec regionu
+
+$servicesQuery=$db->prepare('SELECT * FROM services_sem');
+$servicesQuery->execute();
+$services=$servicesQuery->fetchAll();
 ?>
   <!-- ***** Breadcrumb Area Start ***** -->
   <div class="breadcumb-area bg-img bg-gradient-overlay" style="background-image: url(img/bg-img/12.jpg);">
@@ -38,121 +56,27 @@ include './inc/header.php';
               <thead>
                 <tr>
                   <th scope="col">Service Names</th>
-                  <th scope="col">Stage</th>
+                  <th scope="col">Description</th>
                   <th scope="col">Price</th>
                 </tr>
               </thead>
               <tbody>
+              <?php
+              foreach ($services as $service){
+                    echo '
                 <tr>
-                  <th scope="row">Teeth Whitening Service at home</th>
-                  <td>1 times</td>
-                  <td>$115.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Teeth Whitening Service at Dental Clinic</th>
-                  <td>1 times</td>
-                  <td>$100.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Ceramic crowns and fillings Dental porcelain</th>
-                  <td>1 times</td>
-                  <td>$99.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Remove crowns, bridges Service</th>
-                  <td>1 tooth</td>
-                  <td>$50.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Covering the recession of the gums</th>
-                  <td>1 times</td>
-                  <td>$400.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Consultation, impressions and preparation of models</th>
-                  <td>1 times</td>
-                  <td>$35.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Removal of an old inlay, old crown</th>
-                  <td>1 times</td>
-                  <td>$99.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Overlay teeth whitening ( 2 arches)</th>
-                  <td>1 times</td>
-                  <td>$170.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Standard porcelain and zirconium crown on implant</th>
-                  <td>1 tooth</td>
-                  <td>$499.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Implantation of an implant (price depends on system used)</th>
-                  <td>1 tooth</td>
-                  <td>$600.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Covering the recession of the gums</th>
-                  <td>1 times</td>
-                  <td>$400.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Consultation, impressions and preparation of models</th>
-                  <td>1 times</td>
-                  <td>$35.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Removal of an old inlay, old crown</th>
-                  <td>1 times</td>
-                  <td>$99.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Overlay teeth whitening ( 2 arches)</th>
-                  <td>1 times</td>
-                  <td>$170.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Standard porcelain and zirconium crown on implant</th>
-                  <td>1 tooth</td>
-                  <td>$499.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Implantation of an implant (price depends on system used)</th>
-                  <td>1 tooth</td>
-                  <td>$600.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Covering the recession of the gums</th>
-                  <td>1 times</td>
-                  <td>$400.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Consultation, impressions and preparation of models</th>
-                  <td>1 times</td>
-                  <td>$35.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Removal of an old inlay, old crown</th>
-                  <td>1 times</td>
-                  <td>$99.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Overlay teeth whitening ( 2 arches)</th>
-                  <td>1 times</td>
-                  <td>$170.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Standard porcelain and zirconium crown on implant</th>
-                  <td>1 tooth</td>
-                  <td>$499.00</td>
-                </tr>
-                <tr>
-                  <th scope="row">Implantation of an implant (price depends on system used)</th>
-                  <td>1 tooth</td>
-                  <td>$600.00</td>
-                </tr>
+                  <th scope="row">'.htmlspecialchars(@$service['name']).'</th>
+                  <td>'.htmlspecialchars(@$service['description']).'</td>
+                  <td>$'.$service['price'].'</td> ';
+                    if($isAdmin){
+                        echo '<td class="text-center">
+                                  <a class="text-success pr-2" href="editservice.php?id='.$service['id_ser'].'">Edit</a>
+                                  <a class="text-danger pl-2" href="editservice.php?remove='.$service['id_ser'].'">Remove</a>
+                              </td>';
+                    }
+                    echo '</tr>';
+              }
+              ?>
               </tbody>
             </table>
           </div>
@@ -160,7 +84,8 @@ include './inc/header.php';
 
         <div class="col-12">
           <div class="more-btn text-center mt-50">
-            <a href="#" class="btn dento-btn">Read More <i class="fa fa-angle-double-right"></i></a>
+            <a href="#" class="btn dento-btn booking-btn mr-50">Read More <i class="fa fa-angle-double-right"></i></a>
+              <?php if($isAdmin){echo '<a href="editservice.php" class="btn dento-btn booking-btn registr ml-50">New service <i class="fa fa-angle-double-right"></i></a>';}?>
           </div>
         </div>
       </div>
