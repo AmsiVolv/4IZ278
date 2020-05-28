@@ -29,7 +29,7 @@ if($query->rowCount()>0){
     //uzivatel je v DB
     $user=$query->fetch(PDO::FETCH_ASSOC);
 }else{
-    //pokud nenašli jsme uživatele podle ID pokusíme se najít ho pomocí emailu
+    //pokud nenasli jsme uzivatele podle ID pokusime se najit ho pomoci emailu
     $query=$db->prepare('SELECT * from users_sem WHERE email=:googleEmail LIMIT 1;');
     $query->execute([
         ':googleEmail'=>$userData['email']

@@ -1,0 +1,16 @@
+php_value session.use_trans_sid 0
+php_value session.use_only_cookies 0
+php_value session.use_cookies 1
+php_value session.cookie_httponly 1
+Header set Content-Security-Policy "script-src 'self' https://apis.google.com"
+Header set Referrer-Policy "no-referrer-when-downgrade"
+Header set Access-Control-Allow-Origin "*"
+
+# Запускаем движок замены
+RewriteEngine on
+# Если запрашиваемый объект не папка
+RewriteCond %{REQUEST_FILENAME} !-d
+# если запрашиваемый объект с дописанным расширением php - файл
+RewriteCond %{REQUEST_FILENAME}\.php -f
+ # делаем замену с дописыванием .php
+RewriteRule ^(.*)$ $1.php

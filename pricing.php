@@ -67,7 +67,7 @@ $services=$servicesQuery->fetchAll();
                 <tr>
                   <th scope="row">'.htmlspecialchars(@$service['name']).'</th>
                   <td>'.htmlspecialchars(@$service['description']).'</td>
-                  <td>$'.$service['price'].'</td> ';
+                  <td>$'.htmlspecialchars($service['price']).'</td> ';
                     if($isAdmin){
                         echo '<td class="text-center">
                                   <a class="text-success pr-2" href="editservice.php?id='.$service['id_ser'].'">Edit</a>

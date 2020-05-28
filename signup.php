@@ -13,17 +13,26 @@ if (!empty($_SESSION['user_id'])){
 $errors = [];
 
 if(!empty($_POST)){
+
     $name = trim(@$_POST['name']);
     #region zpracování formuláře
     #region kontrola jména
     if (empty($name)){
         $errors['name']='Name is not correct.';
+    }else{
+        if(!preg_match("/^([a-zA-Z' ]+)$/",$name)){
+            $errors['name']='Name is not correct.';
+        }
     }
     #endregion kontrola jména
     #region kontrola prijmeni
     $surname = trim(@$_POST['surname']);
     if (empty($surname)){
         $errors['surname']='Surname is not correct.';
+    }else{
+        if(!preg_match("/^([a-zA-Z' ]+)$/",$surname)){
+            $errors['surname']='Surname is not correct.';
+        }
     }
     #endregion kontrola prijmeni
     #region kontrola emailu

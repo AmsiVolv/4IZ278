@@ -1,7 +1,6 @@
 <?php
-$isAdmin = false;
-
 require_once './inc/user.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +16,7 @@ require_once './inc/user.php';
 
     <!-- Favicon -->
     <link rel="icon" href="./img/core-img/favicon.ico">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <!-- Core Stylesheet -->
     <link rel="stylesheet" href="style.css">
 
@@ -105,18 +104,8 @@ require_once './inc/user.php';
                     </div>
 
                     <!-- Booking Now Button -->
-                    <a href="#" class="btn dento-btn booking-btn">Booking Now</a>
-                    <?php
-                    #region generovani obsahu admin/personal/registr
-                    if($isAdmin){
-                        echo '<a href="adminpanel.php" class="btn dento-btn booking-btn registr">Admin panel</a>';
-                    }elseif (!empty($_SESSION['user_id'])){
-                        echo '<a href="#" class="btn dento-btn booking-btn registr">Personal area</a>';
-                    }else{
-                       echo '<a href="./signup.php" class="btn dento-btn booking-btn registr">Registr now</a>';
-                    }
-                    #endregion generovani obsahu admin/personal/registr
-                    ?>
+                    <a href="./cal-reservation.php" class="btn dento-btn booking-btn">Booking Now</a>
+                    <a href="./signup.php" class="btn dento-btn booking-btn registr">Registr now</a>
                 </nav>
             </div>
         </div>

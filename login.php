@@ -11,11 +11,17 @@ if (!empty($_SESSION['user_id'])){
 }
 
 $errors=false;
-if (!empty($_POST)){
+if(!empty($_POST)){
+    $email=trim(@$_POST['email']);
+    if (!filter_var($email,FILTER_VALIDATE_EMAIL)){
+        $errors=true;
+    }
+}
+if (!empty($_POST) and !$errors){
     #region zpracování formuláře
     $userQuery=$db->prepare('SELECT * FROM users_sem WHERE email=:email LIMIT 1;');
     $userQuery->execute([
-        ':email'=>trim($_POST['email'])
+        ':email'=>$email
     ]);
     if ($user=$userQuery->fetch(PDO::FETCH_ASSOC)){
 

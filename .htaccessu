@@ -1,6 +1,0 @@
-php_value session.use_trans_sid 0
-php_value session.use_cookies 1
-php_value session.use_only_cookies 0
-php_value session.cookie_httponly 1
-Header set Referrer-Policy "no-referrer-when-downgrade"
-Header set Content-Security-Policy: script-src 'self' https://apis.google.com

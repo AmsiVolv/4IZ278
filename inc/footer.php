@@ -1,5 +1,5 @@
 <!-- ***** Footer Area Start ***** -->
-<footer class="footer-area bg-img bg-gradient-overlay" style="background-image: url(img/bg-img/3.jpg);">
+<footer class="footer-area bg-img bg-gradient-overlay" style="background-image: url(img/bg-img/3.jpg); margin-top: 22%">
     <div class="container">
         <div class="row">
             <!-- Single Footer Widget -->
