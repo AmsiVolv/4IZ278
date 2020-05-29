@@ -4,8 +4,8 @@ $pageTitle = 'Reservation';
 require_once 'inc/user.php';
 
 #kontrolujeme pokud je adminem
-if (!$isAdmin) {
-    header('Location: index.php');
+if ($isAdmin) {
+    $isAdmin=true;
 }
 #konec kontroly admina
 
@@ -14,6 +14,7 @@ include './inc/header.php';
 $servicesQuery=$db->prepare('SELECT * FROM services_sem');
 $servicesQuery->execute();
 $services=$servicesQuery->fetchAll();
+
 
 ?>
 <head>
@@ -33,9 +34,11 @@ $services=$servicesQuery->fetchAll();
         document.addEventListener('DOMContentLoaded', function() {
 
             $("input").on( "click", function() {
-               $('#radioValue').val(($("input:checked" ).val()));
+               $('#radioValue').val(($("input:checked").val()));
             });
 
+            var isAllDay = false;
+            var today = moment().format('YYYY-MM-DD HH:mm:ss');
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
@@ -44,20 +47,35 @@ $services=$servicesQuery->fetchAll();
                     center: 'title',
                     right: 'dayGridMonth,timeGridDay'
                 },
+                firstDay:1,
                 slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, hour12: false },
                 allDaySlot: false,
+                allDayText:false,
                 minTime: "07:00:00",
                 maxTime: "16:00:00",
                 events: 'cal-load.php',
                 navLinks: true, // can click day/week names to navigate views
                 selectable: true,
                 selectOverlap: false,
-                    select: function(start, end, allDay) {
-                        var startDB = moment(start['startStr']).format('YYYY-MM-DD HH:mm:ss');
-                        var endDB = moment(start['endStr']).format('YYYY-MM-DD HH:mm:ss');
-                        $('#startDate').val(startDB);
-                        $('#endDate').val(endDB);
-                        alert("Added Successfully");
+                selectAllow: function(select) {
+                    return moment().diff(select.start) <= 0
+                },
+                dateClick: function(info) {
+                    if (today > info.dateStr){
+                        calendar.changeView('timeGrid', today);
+                    }else{
+                        calendar.changeView('timeGrid', info.dateStr);
+                    }
+                },
+                select: function(start, allDay, end) {
+                    isAllDay = start['allDay'];
+                    if(!isAllDay){
+                        let startDB = moment(start['startStr']).format('YYYY-MM-DD HH:mm:ss');
+                        let endDB = moment(start['endStr']).format('YYYY-MM-DD HH:mm:ss');
+                            $('#startDate').val(startDB);
+                            $('#endDate').val(endDB);
+                            alert('Time period successfully selected');
+                    }
                 },
                 editable: true,
                 eventLimit: true // allow "more" link when too many events
@@ -66,7 +84,10 @@ $services=$servicesQuery->fetchAll();
         });
     </script>
 </head>
-
+<div class="section-heading">
+    <h2>Book now</h2>
+    <div class="line"></div>
+</div>
 <div class="col-12 col-md-12">
     <!-- Form -->
     <div class="container">
@@ -80,13 +101,21 @@ $services=$servicesQuery->fetchAll();
                                     <div class="text-center">
                                         <h4 class="text-dark mb-4">Book an appointment</h4>
                                     </div>
+                                    <?php
+                                    if(isset($_SESSION['errors'])){
+                                        echo '<div class="mt-2 ml-2 text-center">';
+                                        foreach ($_SESSION['errors'] as $error){
+                                            echo '<p class="text-danger">'.$error.'</p>';
+                                        }
+                                        echo '</div>';
+                                        unset($_SESSION['errors']);
+                                    }
+                                    ?>
                                     <hr>
                                     <form action="cal-insert.php" method="post">
                                         <!-- Button trigger modal -->
                                         <div class="form-group  text-center mb-lg-3 mt-lg-3">
                                             <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#calendarModalWindow">
-                                                <input type="hidden" value="<?php echo htmlspecialchars(@$_POST['start']);?>" id="startDate" name="start">
-                                                <input type="hidden" value="<?php echo htmlspecialchars(@$_POST['end']);?>" id="endDate" name="end">
                                                 Choose a date <i class="fa fa-calendar"></i>
                                             </button>
                                             <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#serviceModalWindow">
@@ -94,6 +123,20 @@ $services=$servicesQuery->fetchAll();
                                                 Choose a service
                                             </button>
                                          <!-- Button trigger modal end -->
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <label>
+                                                <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#calendarModalWindow">
+                                                    <input type="text" value="<?php echo htmlspecialchars(@$_POST['start']);?>" id="startDate" name="start" placeholder="Start date:" readonly required>
+                                                </button>
+                                            </label>
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <label>
+                                                <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#calendarModalWindow">
+                                                    <input type="text" value="<?php echo htmlspecialchars(@$_POST['end']);?>" id="endDate" name="end" placeholder="End date:" readonly required>
+                                                </button>
+                                            </label>
                                         </div>
                                         <div class="form-group">
                                             <input type="text" name="description" id="description" class="form-control mb-30" placeholder="Maybe some additional information?" value="<?php echo htmlspecialchars(@$_POST['description']);?>"/>
