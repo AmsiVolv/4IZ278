@@ -1,6 +1,6 @@
 <?php
 $isAdmin = false;
-$pageTitle = 'New service page';
+$pageTitle = 'Edit service page';
 $serviceId = '';
 require_once 'inc/user.php';
 

@@ -104,8 +104,14 @@ require_once './inc/user.php';
                     </div>
 
                     <!-- Booking Now Button -->
-                    <a href="./cal-reservation.php" class="btn dento-btn booking-btn">Booking Now</a>
-                    <a href="./signup.php" class="btn dento-btn booking-btn registr">Registr now</a>
+                    <?php
+                    if(isset($_SESSION['user_id'])){
+                        echo '<a href="./personal.php" class="btn dento-btn booking-btn">Personal area</a>';
+                    }else{
+                        echo '<a href="./signup.php" class="btn dento-btn booking-btn">Registr now</a>';
+                    }
+                    ?>
+                    <a href="./cal-reservation.php" class="btn dento-btn booking-btn registr">Booking Now</a>
                 </nav>
             </div>
         </div>

@@ -98,17 +98,25 @@ $services=$servicesQuery->fetchAll();
                         <div class="row">
                             <div class="col">
                                 <div class="p-5">
-                                    <div class="text-center">
-                                        <h4 class="text-dark mb-4">Book an appointment</h4>
-                                    </div>
                                     <?php
                                     if(isset($_SESSION['errors'])){
-                                        echo '<div class="mt-2 ml-2 text-center">';
+                                        echo '
+                                       <div class="alert alert-dismissable alert-warning">
+                                       <h4 class="text-center">
+                                             We found this mistakes!
+                                        </h4>';
                                         foreach ($_SESSION['errors'] as $error){
                                             echo '<p class="text-danger">'.$error.'</p>';
                                         }
+                                            unset($_SESSION['errors']);
                                         echo '</div>';
-                                        unset($_SESSION['errors']);
+                                    }else{
+                                        echo
+                                        '
+                                    <div class="text-center">
+                                        <h4 class="text-dark mb-4">Book an appointment</h4>
+                                    </div>
+                                        ';
                                     }
                                     ?>
                                     <hr>

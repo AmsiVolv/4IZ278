@@ -72,7 +72,7 @@ if($login){
             header('Location: cal-reservation.php');
         }else{
             #pokud nejsou zadne chyby, tak provedeme prikaz
-            $inserQuery=$db->prepare('INSERT INTO reservation_sem(start_event, end_event, id_user, id_ser, description) VALUES(:start_event, :end_event, :id_user, :id_ser, :description);');
+            $inserQuery=$db->prepare('INSERT INTO reservation_sem(start_event, end_event, id_user, id_ser, comment) VALUES(:start_event, :end_event, :id_user, :id_ser, :description);');
             $inserQuery->execute([
                 ':start_event'=>$_POST['start'],
                 ':end_event'=>$_POST['end'],
@@ -80,7 +80,8 @@ if($login){
                 ':id_ser'=>$id_ser['id_ser'],
                 ':description'=> $description
             ]);
-            header('Location: cal-reservation.php');
+            $_SESSION['success']='You just made your reservation';
+            header('Location: personal.php');
         }
 
     }

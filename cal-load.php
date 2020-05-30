@@ -13,17 +13,20 @@ foreach ($result as $value){
             'id'=> $value['id_res'],
             'start'=>$value['start_event'],
             'end'=>$value['end_event'],
-            'color'=> 'red',
+            'color'=> 'white',
             'title'=>'The term is already taken by someone else.',
-            'editable'=> false
+            'editable'=> false,
+            'textColor'=> 'red'
         );
     }else{
         $data[] = array(
             'id'=> $value['id_res'],
             'start'=>$value['start_event'],
             'end'=>$value['end_event'],
-            'color'=> 'green',
-            'title'=> 'This is your term'
+            'color'=> 'yellow',
+            'title'=> 'This is your term',
+            'editable'=> false,
+            'textColor'=> 'black'
         );
     }
 }
