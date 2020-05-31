@@ -13,13 +13,13 @@ include './inc/header.php';
 
 #nacteme rezervace a sluzby
 if(isset($_GET['old']) and $_GET['old']==='true'){
-    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem INNER JOIN services_sem ON reservation_sem.id_ser = services_sem.id_ser WHERE reservation_sem.id_user=:id and historical=\'1\' ORDER by id_res;');
+    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem INNER JOIN services_sem ON reservation_sem.id_ser = services_sem.id_ser WHERE reservation_sem.id_user=:id and historical=\'1\' ORDER by start_event ASC;');
     $reservationQuery->execute([
         ':id'=>@$_SESSION['user_id']
     ]);
     $reservations=$reservationQuery->fetchAll();
 }else{
-    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem INNER JOIN services_sem ON reservation_sem.id_ser = services_sem.id_ser WHERE reservation_sem.id_user=:id and historical=\'0\' ORDER by id_res;');
+    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem INNER JOIN services_sem ON reservation_sem.id_ser = services_sem.id_ser WHERE reservation_sem.id_user=:id and historical=\'0\' ORDER by start_event ASC;');
     $reservationQuery->execute([
         ':id'=>@$_SESSION['user_id']
     ]);
@@ -81,6 +81,22 @@ if(isset($_GET['old']) and $_GET['old']==='true'){
                     </div>';
                             unset($_SESSION['success']);
                         }
+
+                    #konec bloku
+
+                    #pokud byly nejaky chyby u editace
+                    if (isset($_SESSION['errors'])) {
+                        echo '
+                                       <div class="alert alert-dismissable alert-warning">
+                                       <h4 class="text-center">
+                                             We found this mistakes!
+                                        </h4>';
+                        foreach ($_SESSION['errors'] as $error) {
+                            echo '<p class="text-danger">' . $error . '</p>';
+                        }
+                        unset($_SESSION['errors']);
+                        echo '</div>';
+                    }
                     #konec bloku
 
                     #pokud u cloveka nejsoiu zadne rezervace tak zobrazime hlasku
