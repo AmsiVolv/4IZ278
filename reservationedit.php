@@ -28,7 +28,7 @@ if(isset($_GET)){
                 $id=$_GET['remove'];
                 $remove = true;
             }
-            $reservationQuery=$db->prepare('SELECT * from reservation_sem WHERE id_res=:id LIMIT 1;');
+            $reservationQuery=$db->prepare('SELECT * from reservation_sem WHERE id_res=:id and historical=\'0\' LIMIT 1;');
             $reservationQuery->execute([
                 ':id'=>$id
             ]);
@@ -256,7 +256,7 @@ include './inc/header.php';
                                             <label for="description">
                                                 Description:
                                             </label>
-                                            <input type="text" class="form-control" id="description" name="description" value="" placeholder="<?php echo htmlspecialchars($reservation['comment']); ?>">
+                                            <input type="text" class="form-control" id="description" name="description" value="<?php htmlspecialchars(@$_POST['description'])?>" placeholder="<?php echo htmlspecialchars(@$reservation['comment']); ?>">
                                         </div>
                                         <div class="col-md-3">
                                             <label for="service">
@@ -266,9 +266,9 @@ include './inc/header.php';
                                                 <?php
                                                 foreach ($services as $service){
                                                     if($service['id_ser']===$reservation['id_ser']){
-                                                        echo '<option selected value="'.$service['id_ser'].'">'.$service['name'].'</option>';
+                                                        echo '<option selected value="'.htmlspecialchars($service['id_ser']).'">'.htmlspecialchars($service['name']).'</option>';
                                                     }else{
-                                                        echo '<option value="'.$service['id_ser'].'">'.$service['name'].'</option>';
+                                                        echo '<option value="'.htmlspecialchars($service['id_ser']).'">'.htmlspecialchars($service['name']).'</option>';
                                                     }
                                                 }
                                                 ?>

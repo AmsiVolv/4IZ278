@@ -9,7 +9,7 @@ if ($isAdmin) {
 }
 #konec kontroly admina
 
-include './inc/header.php';
+
 
 #nacteme rezervace a sluzby
 if(isset($_GET['old']) and $_GET['old']==='true'){
@@ -24,8 +24,21 @@ if(isset($_GET['old']) and $_GET['old']==='true'){
         ':id'=>@$_SESSION['user_id']
     ]);
     $reservations=$reservationQuery->fetchAll();
-
 }
+
+#kontrola na historicke rezervace
+foreach ($reservations as $reservation){
+    if($reservation['start_event']<date('Y-m-d H:i:s', time()) and $reservation['historical']==='0'){
+        $updateQuery=$db->prepare('UPDATE `reservation_sem` SET `historical` = \'1\' WHERE `reservation_sem`.`id_res` =:id;');
+        $updateQuery->execute([
+                ':id'=>$reservation['id_res']
+        ]);
+        header('Location: personal.php');
+    }
+}
+#endregion
+
+include './inc/header.php';
 ?>
 <html>
 
@@ -168,9 +181,11 @@ if(isset($_GET['old']) and $_GET['old']==='true'){
                                         <td>
                                             '.htmlspecialchars($reservation['comment']).'
                                         </td>
-                                        <td class="text-center">
-                                            <a class="text-success pr-2" href="reservationedit.php?id='.$reservation['id_res'].'">Edit</a>
-                                            <a class="text-danger pl-2" href="reservationedit.php?remove='.$reservation['id_res'].'">Remove</a>
+                                        <td class="text-center">';
+                                            if(@$_GET['old']!='true'){
+                                                echo '<a class="text-success pr-2" href="reservationedit.php?id='.$reservation['id_res'].'">Edit</a>';
+                                            }
+                                            echo '<a class="text-danger pl-2" href="reservationedit.php?remove='.$reservation['id_res'].'">Remove</a>
                                         </td>
                                     </tr>
                                 ';

@@ -2,15 +2,15 @@ php_value session.use_trans_sid 0
 php_value session.use_only_cookies 0
 php_value session.use_cookies 1
 php_value session.cookie_httponly 1
-Header set Content-Security-Policy "script-src 'self' https://apis.google.com"
+#Header set Content-Security-Policy "script-src 'self' https://apis.google.com"
 Header set Referrer-Policy "no-referrer-when-downgrade"
 Header set Access-Control-Allow-Origin "*"
 
-# Р—Р°РїСѓСЃРєР°РµРј РґРІРёР¶РѕРє Р·Р°РјРµРЅС‹
+# Запускаем движок замены
 RewriteEngine on
-# Р•СЃР»Рё Р·Р°РїСЂР°С€РёРІР°РµРјС‹Р№ РѕР±СЉРµРєС‚ РЅРµ РїР°РїРєР°
+# Если запрашиваемый объект не папка
 RewriteCond %{REQUEST_FILENAME} !-d
-# РµСЃР»Рё Р·Р°РїСЂР°С€РёРІР°РµРјС‹Р№ РѕР±СЉРµРєС‚ СЃ РґРѕРїРёСЃР°РЅРЅС‹Рј СЂР°СЃС€РёСЂРµРЅРёРµРј php - С„Р°Р№Р»
+# если запрашиваемый объект с дописанным расширением php - файл
 RewriteCond %{REQUEST_FILENAME}\.php -f
- # РґРµР»Р°РµРј Р·Р°РјРµРЅСѓ СЃ РґРѕРїРёСЃС‹РІР°РЅРёРµРј .php
+ # делаем замену с дописыванием .php
 RewriteRule ^(.*)$ $1.php
