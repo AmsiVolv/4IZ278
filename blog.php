@@ -1,7 +1,16 @@
 <?php
+$isAdmin = false;
 $pageTitle = 'Blog page';
+require_once './inc/clasees/PostsMain.php';
+require_once 'inc/user.php';
+
+if(!$isAdmin){
+    $isAdmin = false;
+}
+
 include './inc/header.php';
 ?>
+
   <!-- ***** Breadcrumb Area Start ***** -->
   <div class="breadcumb-area bg-img bg-gradient-overlay" style="background-image: url(img/bg-img/12.jpg);">
     <div class="container h-100">
@@ -15,7 +24,7 @@ include './inc/header.php';
   <div class="breadcumb--con">
     <div class="container">
       <div class="row">
-        <div class="col-12">
+        <div class="col-9">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="#"><i class="fa fa-home"></i> Home</a></li>
@@ -23,6 +32,16 @@ include './inc/header.php';
             </ol>
           </nav>
         </div>
+          <?php
+          if($isAdmin){
+              echo '         
+          <div class="col-3 breadcrumb">
+              <button class="btn dento-btn booking-btn">
+                  <a href="postCreate.php" class="">New post</a>
+              </button>
+          </div>';
+          }
+          ?>
       </div>
     </div>
   </div>
@@ -48,86 +67,17 @@ include './inc/header.php';
               <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam nec tincidunt interdum ante consectetur dapibus molestie ...</p>
               <div class="post-meta">
                 <a href="#"><i class="icon_clock_alt"></i> 28 Sep 2018</a>
-                <a href="#"><i class="icon_chat_alt"></i> 3 Comments</a>
               </div>
             </div>
           </div>
 
-          <!-- Single Blog Item -->
-          <div class="single-blog-item style-2 d-flex flex-wrap align-items-center mb-50">
-            <!-- Blog Thumbnail -->
-            <div class="blog-thumbnail">
-              <a href="blog-details.php">
-                <img src="./img/bg-img/17.jpg" alt="">
-              </a>
-            </div>
-            <!-- Blog Content -->
-            <div class="blog-content">
-              <a href="blog-details.php" class="post-title">What is the best kind of toothpaste to use?</a>
-              <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam nec tincidunt interdum ante consectetur dapibus molestie ...</p>
-              <div class="post-meta">
-                <a href="#"><i class="icon_clock_alt"></i> 28 Sep 2018</a>
-                <a href="#"><i class="icon_chat_alt"></i> 3 Comments</a>
-              </div>
-            </div>
-          </div>
 
           <!-- Single Blog Item -->
-          <div class="single-blog-item style-2 d-flex flex-wrap align-items-center mb-50">
-            <!-- Blog Thumbnail -->
-            <div class="blog-thumbnail">
-              <a href="blog-details.php">
-                <img src="./img/bg-img/18.jpg" alt="">
-              </a>
-            </div>
-            <!-- Blog Content -->
-            <div class="blog-content">
-              <a href="blog-details.php" class="post-title">Why you should avoid sipping your drinks</a>
-              <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam nec tincidunt interdum ante consectetur dapibus molestie ...</p>
-              <div class="post-meta">
-                <a href="#"><i class="icon_clock_alt"></i> 28 Sep 2018</a>
-                <a href="#"><i class="icon_chat_alt"></i> 3 Comments</a>
-              </div>
-            </div>
-          </div>
+            <?php
+            $a = new Post();
+            $a->test($a->getPosts());
+            ?>
 
-          <!-- Single Blog Item -->
-          <div class="single-blog-item style-2 d-flex flex-wrap align-items-center mb-50">
-            <!-- Blog Thumbnail -->
-            <div class="blog-thumbnail">
-              <a href="blog-details.php">
-                <img src="./img/bg-img/19.jpg" alt="">
-              </a>
-            </div>
-            <!-- Blog Content -->
-            <div class="blog-content">
-              <a href="blog-details.php" class="post-title">How long does numbness last after the dentist?</a>
-              <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam nec tincidunt interdum ante consectetur dapibus molestie ...</p>
-              <div class="post-meta">
-                <a href="#"><i class="icon_clock_alt"></i> 28 Sep 2018</a>
-                <a href="#"><i class="icon_chat_alt"></i> 3 Comments</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Single Blog Item -->
-          <div class="single-blog-item style-2 d-flex flex-wrap align-items-center mb-50">
-            <!-- Blog Thumbnail -->
-            <div class="blog-thumbnail">
-              <a href="blog-details.php">
-                <img src="./img/bg-img/20.jpg" alt="">
-              </a>
-            </div>
-            <!-- Blog Content -->
-            <div class="blog-content">
-              <a href="blog-details.php" class="post-title">Lie bumps (transient lingual papillitis): What to know</a>
-              <p>Donec tempor, lorem et euismod eleifend, est lectus laoreet ante, sed accusan justo diam nec tincidunt interdum ante consectetur dapibus molestie ...</p>
-              <div class="post-meta">
-                <a href="#"><i class="icon_clock_alt"></i> 28 Sep 2018</a>
-                <a href="#"><i class="icon_chat_alt"></i> 3 Comments</a>
-              </div>
-            </div>
-          </div>
 
           <!-- Pagination -->
           <nav class="dento-pagination mb-100">

@@ -100,6 +100,9 @@ include './inc/header.php';
                     #pokud byly nejaky chyby u editace
                     if (isset($_SESSION['errors'])) {
                         echo '
+                                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                                                    ×
+                                       </button>
                                        <div class="alert alert-dismissable alert-warning">
                                        <h4 class="text-center">
                                              We found this mistakes!

@@ -28,9 +28,10 @@ if(isset($_GET)){
                 $id=$_GET['remove'];
                 $remove = true;
             }
-            $reservationQuery=$db->prepare('SELECT * from reservation_sem WHERE id_res=:id and historical=\'0\' LIMIT 1;');
+            $reservationQuery=$db->prepare('SELECT * from reservation_sem WHERE id_res=:id and historical=\'0\' and id_user=:id_user LIMIT 1;');
             $reservationQuery->execute([
-                ':id'=>$id
+                ':id'=>$id,
+                'id_user'=>$_SESSION['user_id']
             ]);
             $reservation=$reservationQuery->fetch();
             if($reservationQuery->rowCount()<1){
@@ -131,7 +132,7 @@ if(!empty($_POST) and empty($errors)){
     #endregion kontrola datumu
 
     #kontrola popisu
-    $description = trim(@$_POST['description']);
+    $description = htmlspecialchars(trim(@$_POST['description']));
     if(strlen($description)>255){
         $errors['description']='Max number of symbols - 255';
     }
@@ -175,7 +176,7 @@ if(!empty($_POST) and empty($errors)){
     if($notFree){
         $string = '';
         foreach (array_diff($poosibleTime, $newArray) as $item){
-            $string .= ' '.substr($item, 0,5);
+            $string .= ' '.substr($item, 0,5).',';
         }
         $errorsForm['date']='We are sorry, but this term was already taken by somebody. At ('.$_POST['date'].') this time: '.$string.' is still free!';
     }
@@ -218,6 +219,9 @@ include './inc/header.php';
                                 <?php
                                 if(!empty($errorsForm)){
                                     echo '
+                                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                                                    ×
+                                       </button>
                                        <div class="alert alert-dismissable alert-warning">
                                        <h4 class="text-center">
                                              We found this mistakes!
@@ -256,7 +260,7 @@ include './inc/header.php';
                                             <label for="description">
                                                 Description:
                                             </label>
-                                            <input type="text" class="form-control" id="description" name="description" value="<?php htmlspecialchars(@$_POST['description'])?>" placeholder="<?php echo htmlspecialchars(@$reservation['comment']); ?>">
+                                            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars(@$reservation['comment']); ?>" placeholder="<?php echo htmlspecialchars(@$reservation['comment']); ?>">
                                         </div>
                                         <div class="col-md-3">
                                             <label for="service">
@@ -279,6 +283,9 @@ include './inc/header.php';
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary">
                                         Submit
+                                    </button>
+                                    <button type="submit" class="btn btn-secondary">
+                                        <a class="text-decoration-none text-white" href="personal.php?old=false"">Cancel</a>
                                     </button>
                                 </div>
                             </form>
