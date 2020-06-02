@@ -11,7 +11,6 @@ if(!$isAdmin){
 #konec kontroly admina
 $selectQuery=$db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
 
-
 #region nacteni existujeciho prespevku
 if(!empty($_REQUEST['id']) and is_numeric($_REQUEST['id'])){
     #kontrola existence prispevku
@@ -69,9 +68,11 @@ if(!empty($_REQUEST['remove']) and is_numeric($_REQUEST['remove'])){
 }
 #endregion mazani prespevku
 
+#region UPDATE prispevku
 $errors=[];
 if(!empty($_POST)){
-    #region kontrola formulare
+    if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])){
+        #region kontrola formulare
         #kontrola nazvu sluzby
         $name = trim($_POST['service_name']);
         if(empty($name)){
@@ -93,61 +94,66 @@ if(!empty($_POST)){
             $errors['description']='Service description is not correct.';
         }
         #konec kontroly popisu sluzby
-    #konec kontroly formulare
+        #konec kontroly formulare
 
-    if(empty($errors)){
-        if($serviceId){
-            #aktualizace existujeciho prespevku
-            $updateQuery=$db->prepare('UPDATE services_sem SET name=:name, price=:price, description=:description WHERE id_ser=:id LIMIT 1;');
-            $updateQuery->execute([
-                ':name'=>$name,
-                ':price'=>$price,
-                ':description'=>$description,
-                ':id'=>$serviceId
-            ]);
-            #konec aktualizace
-        }else{
-            #vkladani noveho prispevku
-            $serviceQuery=$db->prepare('INSERT INTO services_sem (name, price, description) VALUES (:name, :price, :description);');
-            $serviceQuery->execute([
-                ':name'=>$name,
-                ':price'=>$price,
-                ':description'=>$description
-            ]);
-            #konec vkladani noveho prispevku
+        if(empty($errors)){
+            if($serviceId){
+                #aktualizace existujeciho prespevku
+                $updateQuery=$db->prepare('UPDATE services_sem SET name=:name, price=:price, description=:description WHERE id_ser=:id LIMIT 1;');
+                $updateQuery->execute([
+                    ':name'=>$name,
+                    ':price'=>$price,
+                    ':description'=>$description,
+                    ':id'=>$serviceId
+                ]);
+                #konec aktualizace
+            }else{
+                #vkladani noveho prispevku
+                $serviceQuery=$db->prepare('INSERT INTO services_sem (name, price, description) VALUES (:name, :price, :description);');
+                $serviceQuery->execute([
+                    ':name'=>$name,
+                    ':price'=>$price,
+                    ':description'=>$description
+                ]);
+                #konec vkladani noveho prispevku
+            }
+            header('Location: pricing.php');
+            exit();
         }
-        header('Location: pricing.php');
-        exit();
+    }else{
+        $errors['csrf']='Invalid CSRF token';
     }
 }
+#endregion update
 include './inc/header.php';
 ?>
 <section class="dento-about-us-area section-padding-100-0">
     <?php
         if(!empty($errors)){
             foreach ($errors as $error){
-                echo $error.'</br>';
+                echo '<p class="text-center text-danger">'.$error.'</p></br>';
             }
         }
     ?>
     <div class="container">
-        <form method="post">
+        <form name="editServiceForm" method="post">
+            <input type="hidden" name="csrf" value="<?php echo (getCSRF($_SERVER['PHP_SELF'])); ?>">
             <div class="form-group row justify-content-center">
                 <label class="col-1 col-form-label mr-50" for="Service_name">Name: </label>
                 <div class="col-5">
-                    <input required id="service_name" name="service_name" placeholder="" type="text" class="form-control"  value="<?php echo htmlspecialchars(@$name);?>" />
+                    <input required id="service_name" name="service_name" placeholder="<?php echo htmlspecialchars(@$name);?>" type="text" class="form-control"  value="<?php echo htmlspecialchars(@$_POST['service_name'])?>" />
                 </div>
             </div>
             <div class="form-group row justify-content-center">
                 <label for="service_price" class="col-1 col-form-label mr-50">Price: </label>
                 <div class="col-5">
-                    <input required id="service_price" name="service_price" placeholder="" type="number" class="form-control" value="<?php echo htmlspecialchars(@$price);?>" />
+                    <input required id="service_price" name="service_price" placeholder="<?php echo htmlspecialchars(@$price);?>" type="number" class="form-control" value="<?php echo htmlspecialchars(@$_POST['service_price'])?>" />
                 </div>
             </div>
             <div class="form-group row justify-content-center">
                 <label for="service_description" class="col-1 col-form-label mr-50">Description: </label>
                 <div class="col-5">
-                    <textarea required type="text" id="service_description" name="service_description" placeholder="" cols="40" rows="5" class="form-control" value=""><?php echo htmlspecialchars(@$description);?></textarea>
+                    <textarea required type="text" id="service_description" name="service_description" placeholder="<?php echo htmlspecialchars(@$description);?>" cols="40" rows="5" class="form-control" value="<?php echo htmlspecialchars(@$_POST['service_description'])?>"></textarea>
                 </div>
             </div>
             <div class="d-flex justify-content-end mt-15 mb-100">

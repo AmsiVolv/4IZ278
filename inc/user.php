@@ -29,3 +29,29 @@ if (!empty($_SESSION['user_id'])) {
     }
 }
 
+#udelame CSRF token
+function getCSRF($a){
+    if(empty($_SESSION['key'])){
+        $_SESSION['key'] = bin2hex(random_bytes(32));
+    }
+    $csrfKey = hash_hmac('sha256', 'This key will work at '.$a.'', $_SESSION['key']);
+    return $csrfKey;
+}
+#konec regionu
+
+#kontrola CSRF tokenu
+/*
+    @param $a = token
+    @param $b = form input
+*/
+function checkCSRF($a, $b){
+    if(isset($_POST['submit'])){
+        if(hash_equals(getCSRF($a), $b)){
+           return true;
+        }else{
+            return false;
+        }
+    }
+}
+#konec regionu
+

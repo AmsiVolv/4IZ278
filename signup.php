@@ -13,77 +13,79 @@ if (!empty($_SESSION['user_id'])){
 $errors = [];
 
 if(!empty($_POST)){
-
+if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])) {
     $name = trim(@$_POST['name']);
     #region zpracování formuláře
     #region kontrola jména
-    if (empty($name)){
-        $errors['name']='Name is not correct.';
-    }else{
-        if(!preg_match("/^([a-zA-Z' ]+)$/",$name)){
-            $errors['name']='Name is not correct.';
+    if (empty($name)) {
+        $errors['name'] = 'Name is not correct.';
+    } else {
+        if (!preg_match("/^([a-zA-Z' ]+)$/", $name)) {
+            $errors['name'] = 'Name is not correct.';
         }
     }
     #endregion kontrola jména
     #region kontrola prijmeni
     $surname = trim(@$_POST['surname']);
-    if (empty($surname)){
-        $errors['surname']='Surname is not correct.';
-    }else{
-        if(!preg_match("/^([a-zA-Z' ]+)$/",$surname)){
-            $errors['surname']='Surname is not correct.';
+    if (empty($surname)) {
+        $errors['surname'] = 'Surname is not correct.';
+    } else {
+        if (!preg_match("/^([a-zA-Z' ]+)$/", $surname)) {
+            $errors['surname'] = 'Surname is not correct.';
         }
     }
     #endregion kontrola prijmeni
     #region kontrola emailu
-    $email=trim(@$_POST['email']);
-    if (!filter_var($email,FILTER_VALIDATE_EMAIL)){
-        $errors['email']='This email adress is not correct.';
-    }else{
+    $email = trim(@$_POST['email']);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'This email adress is not correct.';
+    } else {
         //kontrola, jestli již není e-mail registrovaný
-        $mailQuery=$db->prepare('SELECT * FROM users_sem WHERE email=:email LIMIT 1;');
+        $mailQuery = $db->prepare('SELECT * FROM users_sem WHERE email=:email LIMIT 1;');
         $mailQuery->execute([
-            ':email'=>$email
+            ':email' => $email
         ]);
-        if ($mailQuery->rowCount()>0){
-            $errors['email']='This email address already exist.';
+        if ($mailQuery->rowCount() > 0) {
+            $errors['email'] = 'This email address already exist.';
         }
     }
     #endregion kontrola emailu
     #region kontrola tel.cisla
-    $_POST['phone']=str_replace([' ','-','/'],'',trim($_POST['phone']));
-    if ($_POST['phone']!='' && !preg_match("/^\+420[0-9]{9}$/",$_POST['phone'])) {
+    $_POST['phone'] = str_replace([' ', '-', '/'], '', trim($_POST['phone']));
+    if ($_POST['phone'] != '' && !preg_match("/^\+420[0-9]{9}$/", $_POST['phone'])) {
         $errors['phone'] = 'Number is not correct!';
     }
     #endregion kontrola tel.cisla
     #region kontrola hesla
-    if(empty($_POST['password'] || (strlen($_POST['password']<5)))){
-        $errors['password']='Password should be 8 characters at least';
+    if (empty($_POST['password'] || (strlen($_POST['password'] < 5)))) {
+        $errors['password'] = 'Password should be 8 characters at least';
     }
-    if($_POST['password'] != $_POST['passwordTwo']){
-        $errors['password']='The passwords you entered do not match';
+    if ($_POST['password'] != $_POST['passwordTwo']) {
+        $errors['password'] = 'The passwords you entered do not match';
     }
     #endregion kontrola hesla
 
-    if(empty($errors)){
+    if (empty($errors)) {
         #registrace uzivatele
-        $password=password_hash($_POST['password'],PASSWORD_DEFAULT);
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        $userQuery=$db->prepare('INSERT INTO users_sem (name, surname, email, password) VALUES (:name, :surname, :email, :password);');
+        $userQuery = $db->prepare('INSERT INTO users_sem (name, surname, email, password) VALUES (:name, :surname, :email, :password);');
         $userQuery->execute([
-                ':name'=> $name,
-                ':surname'=> $surname,
-                ':email'=> $email,
-                ':password'=>$password
+            ':name' => $name,
+            ':surname' => $surname,
+            ':email' => $email,
+            ':password' => $password
         ]);
         //uživatele rovnou přihlásíme
-        $_SESSION['user_id']=$db->lastInsertId();
-        $_SESSION['user_name']=$name;
+        $_SESSION['user_id'] = $db->lastInsertId();
+        $_SESSION['user_name'] = $name;
         //přesměrování na homepage
         header('Location: index.php');
         exit();
     }
-
+}else{
+    $errors['csrf']='Invalid CSRF token';
+}
 }
 include './inc/header.php';
 ?>
@@ -95,7 +97,11 @@ include './inc/header.php';
                 <div class="line"></div>
             </div>
             <!-- Form -->
-            <form action="signup.php" method="post">
+            <form action="signup.php" method="post" name="singupForm">
+                <?php
+                    if(!empty($errors['csrf'])){echo '<div class="text-danger text-center mb-3">'.$errors['csrf'].'</div>';}
+                ?>
+                <input type="hidden" name="csrf" value="<?php echo (getCSRF($_SERVER['PHP_SELF'])); ?>">
                 <div class="row justify-content-md-center">
                     <div class="col-lg-2  mr-1">
                         <?php
@@ -141,7 +147,7 @@ include './inc/header.php';
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-auto">
-                        <button type="submit" class="btn dento-btn">Registr now</button>
+                        <button name="submit" type="submit" class="btn dento-btn">Registr now</button>
                     </div>
                     <div class="col-md-auto">
                         <a href="<?php echo $auth_url?>" class="btn dento-btn btn-outline-warning">Registr via google</a>

@@ -121,82 +121,86 @@ function strTime($a, $b){
 #region zpracovani formulare
 $errorsForm=[];
 if(!empty($_POST) and empty($errors)){
-    #kontrola pomoci regilarniho vyrazu datum a cas
-    if(preg_match('/[0-9-]{10} [0-9:]{8}/', $_POST['date'].' '.$_POST['time'])){
-        $time = strtotime($_POST['date'].' '.$_POST['time']);
-        $startTime = date("Y-m-d H:i:s", $time);
-        $endTime = date("Y-m-d H:i:s", strtotime('+30 minutes', $time));
-    }else{
-        $errorsForm['date'] = 'Invalid date/time format';
-    }
-    #endregion kontrola datumu
-
-    #kontrola popisu
-    $description = htmlspecialchars(trim(@$_POST['description']));
-    if(strlen($description)>255){
-        $errors['description']='Max number of symbols - 255';
-    }
-    #konec kontroly popisu
-
-    #region kontrola sluzby
-    $serviceId = trim(@$_POST['service']);
-    if(empty($serviceId)){
-        $errors['service']='Service name is not correct.';
-    }else{
-        #kontrola existence sluzby
-        $serviseQuery=$db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
-        $serviseQuery->execute([
-            ':id'=>$serviceId
-        ]);
-        if($serviseQuery->rowCount()<=0){
-            $errors['service']='Service name is not correct.';
+    if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])) {
+        #kontrola pomoci regilarniho vyrazu datum a cas
+        if (preg_match('/[0-9-]{10} [0-9:]{8}/', $_POST['date'] . ' ' . $_POST['time'])) {
+            $time = strtotime($_POST['date'] . ' ' . $_POST['time']);
+            $startTime = date("Y-m-d H:i:s", $time);
+            $endTime = date("Y-m-d H:i:s", strtotime('+30 minutes', $time));
+        } else {
+            $errorsForm['date'] = 'Invalid date/time format';
         }
-        #endregion kontrola existence sluzby
-    }
-    #endregion kontrola sluzby
+        #endregion kontrola datumu
 
-    #dalsi kontrola datumu
+        #kontrola popisu
+        $description = htmlspecialchars(trim(@$_POST['description']));
+        if (strlen($description) > 255) {
+            $errors['description'] = 'Max number of symbols - 255';
+        }
+        #konec kontroly popisu
+
+        #region kontrola sluzby
+        $serviceId = trim(@$_POST['service']);
+        if (empty($serviceId)) {
+            $errors['service'] = 'Service name is not correct.';
+        } else {
+            #kontrola existence sluzby
+            $serviseQuery = $db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
+            $serviseQuery->execute([
+                ':id' => $serviceId
+            ]);
+            if ($serviseQuery->rowCount() <= 0) {
+                $errors['service'] = 'Service name is not correct.';
+            }
+            #endregion kontrola existence sluzby
+        }
+        #endregion kontrola sluzby
+
+        #dalsi kontrola datumu
         #pokud neni mensi nez dnesni datum
-    if($startTime<date('Y-m-d H:i:s', time())){
-        $errorsForm['date']= 'The day selected is less than today.';
-    }else {
-        #natahnime vsechny rezervace na tento den
-        $selectReserv = $db->prepare('SELECT * FROM reservation_sem WHERE(start_event LIKE :date);');
-        $selectReserv->execute([':date' => date('Y-m-d', $time) . '%']);
-        $reservationsArray = $selectReserv->fetchAll();
-        foreach ($reservationsArray as $item) {
-            if ($item['start_event'] === $startTime) {
-                if ($item['id_res'] != $_SESSION['id_res']) {
-                    $notFree = true;
-                    $newArray = Array(substr($item['start_event'],11));
+        if ($startTime < date('Y-m-d H:i:s', time())) {
+            $errorsForm['date'] = 'The day selected is less than today.';
+        } else {
+            #natahnime vsechny rezervace na tento den
+            $selectReserv = $db->prepare('SELECT * FROM reservation_sem WHERE(start_event LIKE :date);');
+            $selectReserv->execute([':date' => date('Y-m-d', $time) . '%']);
+            $reservationsArray = $selectReserv->fetchAll();
+            foreach ($reservationsArray as $item) {
+                if ($item['start_event'] === $startTime) {
+                    if ($item['id_res'] != $_SESSION['id_res']) {
+                        $notFree = true;
+                        $newArray = Array(substr($item['start_event'], 11));
+                    }
                 }
             }
         }
-    }
-    if($notFree){
-        $string = '';
-        foreach (array_diff($poosibleTime, $newArray) as $item){
-            $string .= ' '.substr($item, 0,5).',';
+        if ($notFree) {
+            $string = '';
+            foreach (array_diff($poosibleTime, $newArray) as $item) {
+                $string .= ' ' . substr($item, 0, 5) . ',';
+            }
+            $errorsForm['date'] = 'We are sorry, but this term was already taken by somebody. At (' . $_POST['date'] . ') this time: ' . $string . ' is still free!';
         }
-        $errorsForm['date']='We are sorry, but this term was already taken by somebody. At ('.$_POST['date'].') this time: '.$string.' is still free!';
-    }
         #konec kontroly unikatnosti datumu
 
         #endregion porovnani s dnesnim datumem
-    #endregion
+        #endregion
 
-    if(empty($errorsForm)){
-        $updateQuery=$db->prepare('UPDATE reservation_sem SET start_event=:startTime, end_event=:endTime, comment=:description, id_ser=:id_ser WHERE id_res=:id LIMIT 1; ');
-        $updateQuery->execute([
-                ':startTime'=>$startTime,
-                ':endTime'=>$endTime,
-                ':description'=>$description,
-                ':id_ser'=>$serviceId,
-                ':id'=>$_SESSION['id_res']
-        ]);
-        unset($_SESSION['id_res']);
-        $_SESSION['success']='You just update your reservation!';
-        header('Location: personal.php');
+        if (empty($errorsForm)) {
+            $updateQuery = $db->prepare('UPDATE reservation_sem SET start_event=:startTime, end_event=:endTime, comment=:description, id_ser=:id_ser WHERE id_res=:id LIMIT 1; ');
+            $updateQuery->execute([
+                ':startTime' => $startTime,
+                ':endTime' => $endTime,
+                ':description' => $description,
+                ':id_ser' => $serviceId,
+                ':id' => $_SESSION['id_res']
+            ]);
+            unset($_SESSION['id_res']);
+            $_SESSION['success'] = 'You just update your reservation!';
+            header('Location: personal.php');
+        }
+    }else{
+        $errorsForm['csrf']='Invalid CSRF token.';
     }
 }
 #endregion zpracovani formulare
@@ -215,7 +219,8 @@ include './inc/header.php';
                         <div class="col-md-3">
                         </div>
                         <div class="col-md-6 card shadow-lg o-hidden border-0 p-5">
-                            <form role="form" method="post">
+                            <form role="form" method="post" name="reservationEditForm">
+                                <input type="hidden" name="csrf" value="<?php echo (getCSRF($_SERVER['PHP_SELF'])); ?>">
                                 <?php
                                 if(!empty($errorsForm)){
                                     echo '
@@ -237,7 +242,7 @@ include './inc/header.php';
                                             <label for="reservationDate">
                                                 Reservation date:
                                             </label>
-                                            <input type="date" class="form-control" id="exampleInputEmail1" value="<?php echo date('Y-m-d', $timestampStart); ?>" name="date"/>
+                                            <input type="date" class="form-control" id="date" value="<?php echo htmlspecialchars(date('Y-m-d', $timestampStart)); ?>" name="date"/>
                                         </div>
                                         <div class="col-md-3">
                                             <label for="reservationDate">
@@ -284,7 +289,7 @@ include './inc/header.php';
                                     <button type="submit" class="btn btn-primary">
                                         Submit
                                     </button>
-                                    <button type="submit" class="btn btn-secondary">
+                                    <button name="submit" id="submit" type="submit" class="btn btn-secondary">
                                         <a class="text-decoration-none text-white" href="personal.php?old=false"">Cancel</a>
                                     </button>
                                 </div>

@@ -57,8 +57,6 @@ class Post extends PostsMain
             $this->validText($postTitle);
             $postTitle = $this->getPostTitle();
 
-            $this->validURL($postIMG);
-            $postIMG = $this->getURL();
 
             if(empty($this->errors)){
                 $insertQuery=$this->db->prepare('INSERT into posts_sem(created_at, text, title, id_user, imgURL) value (:date, :text, :title, :user_id, :url);');
@@ -67,7 +65,7 @@ class Post extends PostsMain
                     ':text'=>$postText,
                     ':title'=>$postTitle,
                     ':user_id'=>$_SESSION['user_id'],
-                    ':url'=>$postIMG
+                    ':url'=>$this->validIMG($postIMG)
                 ]);
             }else{
                 var_dump($this->errors);
@@ -114,12 +112,46 @@ class Post extends PostsMain
     }
     //function to validate text
 
-    public function validURL($url){
-        if (filter_var($url, FILTER_VALIDATE_URL) != FALSE) {
-            $this->postIMG = $url;
-        }else{
-            $this->errors['URL']='Invalid URL';
+    public function validIMG($img){
+
+        $errors = [];
+
+        $fileName = $img['name'];
+        $fileSize = $img['size'];
+        $fileTmp = $img['tmp_name'];
+        $fileType = $img['type'];
+        $fileExt = @strtolower(end(explode('.',$img['name'])));
+
+        $expensions= array("jpeg","jpg","png");
+
+        if(in_array($fileExt,$expensions)=== false){
+            $errors['extension']="Extension not allowed, please choose a JPEG or PNG file.";
+        }else
+
+        if($fileSize > 2097152) {
+            $errors['size']='File size must be less than 2 MB';
         }
+
+        if($this->get_mime_type($fileTmp) === 'image/png' ||
+           $this->get_mime_type($fileTmp) === 'image/jpeg'||
+           $this->get_mime_type($fileTmp) === 'image/jpg' and empty($errors)){
+           move_uploaded_file($fileTmp, './img/uploads/'.$fileName);
+           return './img/uploads/'.$fileName;
+        }else{
+            var_dump(0);
+        }
+    }
+
+    public function get_mime_type($file) {
+        $mtype = false;
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mtype = finfo_file($finfo, $file);
+            finfo_close($finfo);
+        } elseif (function_exists('mime_content_type')) {
+            $mtype = mime_content_type($file);
+        }
+        return $mtype;
     }
 
     /**

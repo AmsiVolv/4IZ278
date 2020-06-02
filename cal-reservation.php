@@ -120,14 +120,15 @@ $services=$servicesQuery->fetchAll();
                                     }
                                     ?>
                                     <hr>
-                                    <form action="cal-insert.php" method="post">
+                                    <form action="cal-insert.php" method="post" name="calInsertForm">
                                         <!-- Button trigger modal -->
+                                        <input type="hidden" name="csrf" value="<?php echo (getCSRF($_SERVER['PHP_SELF'])); ?>">
                                         <div class="form-group  text-center mb-lg-3 mt-lg-3">
                                             <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#calendarModalWindow">
                                                 Choose a date <i class="fa fa-calendar"></i>
                                             </button>
                                             <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#serviceModalWindow">
-                                                <input type="hidden" value="" id="radioValue" name="serName" value="<?php echo htmlspecialchars(@$_POST['serName']);?>">
+                                                <input type="hidden" id="radioValue" name="serName" value="<?php echo htmlspecialchars(@$_POST['serName']);?>">
                                                 Choose a service
                                             </button>
                                          <!-- Button trigger modal end -->
@@ -150,7 +151,7 @@ $services=$servicesQuery->fetchAll();
                                             <input type="text" name="description" id="description" class="form-control mb-30" placeholder="Maybe some additional information?" value="<?php echo htmlspecialchars(@$_POST['description']);?>"/>
                                         </div>
                                         <hr>
-                                        <button class="btn btn-primary btn-block text-white btn-user" type="submit">Make a reservation</button>
+                                        <button name="submit" id="sumbit" class="btn btn-primary btn-block text-white btn-user" type="submit">Make a reservation</button>
                                     </form>
                                 </div>
                             </div>

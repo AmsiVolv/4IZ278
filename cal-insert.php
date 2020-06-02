@@ -9,6 +9,7 @@ if(empty($_SESSION['user_id'])){
 
 if($login){
     if(isset($_POST)){
+        if(checkCSRF('/4IZ278/cal-reservation.php', $_POST['csrf'])){
         $errors = [];
 
         #region zpracování formuláře
@@ -83,7 +84,11 @@ if($login){
             $_SESSION['success']='You just made your reservation';
             header('Location: personal.php');
         }
-
+        }else{
+            $errors['csrf']='Invalid CSRF token';
+            $_SESSION['errors']=$errors;
+            header('Location: cal-reservation.php');
+        }
     }
 }else{
     $errors['login'] = 'First you need to sign up/sign in';

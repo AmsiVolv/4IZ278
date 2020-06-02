@@ -1,4 +1,5 @@
 <?php
+
 $isAdmin = false;
 $pageTitle = 'Pricing page';
 include './inc/header.php';
@@ -20,6 +21,8 @@ function alert($msg)
 $servicesQuery = $db->prepare('SELECT * FROM services_sem');
 $servicesQuery->execute();
 $services = $servicesQuery->fetchAll();
+
+
 ?>
 <!-- ***** Breadcrumb Area Start ***** -->
 <div class="breadcumb-area bg-img bg-gradient-overlay" style="background-image: url(img/bg-img/12.jpg);">

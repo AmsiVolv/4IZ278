@@ -64,12 +64,6 @@
 
                     <p>We will send out weekly newest article and some great offers</p>
                     <!-- Newsletter Form -->
-                    <div class="footer-newsletter-form">
-                        <form action="#" method="post">
-                            <input type="email" name="nl-email" value="" placeholder="Email Address">
-                            <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
-                        </form>
-                    </div>
 
                     <!-- Social Info -->
                     <div class="footer-social-info">
