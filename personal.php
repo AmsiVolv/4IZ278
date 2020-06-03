@@ -13,13 +13,13 @@ if ($isAdmin) {
 
 #nacteme rezervace a sluzby
 if(isset($_GET['old']) and $_GET['old']==='true'){
-    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem INNER JOIN services_sem ON reservation_sem.id_ser = services_sem.id_ser WHERE reservation_sem.id_user=:id and historical=\'1\' ORDER by start_event ASC;');
+    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem WHERE reservation_sem.id_user=:id and historical=\'1\' ORDER by start_event ASC;');
     $reservationQuery->execute([
         ':id'=>@$_SESSION['user_id']
     ]);
     $reservations=$reservationQuery->fetchAll();
 }else{
-    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem INNER JOIN services_sem ON reservation_sem.id_ser = services_sem.id_ser WHERE reservation_sem.id_user=:id and historical=\'0\' ORDER by start_event ASC;');
+    $reservationQuery=$db->prepare('SELECT * FROM reservation_sem WHERE reservation_sem.id_user=:id and historical=\'0\' ORDER by start_event ASC;');
     $reservationQuery->execute([
         ':id'=>@$_SESSION['user_id']
     ]);
@@ -37,6 +37,15 @@ foreach ($reservations as $reservation){
     }
 }
 #endregion
+function getSerName($a, $db, $resID){
+    $selectServices=$db->prepare('SELECT * FROM reservation_sem JOIN services_sem ON services_sem.id_ser=:id WHERE reservation_sem.id_res=:id_res LIMIT 1;');
+    $selectServices->execute([
+        ':id'=>$a,
+        ':id_res'=>$resID
+    ]);
+    $services=$selectServices->fetchAll(PDO::FETCH_ASSOC);
+    return $services[0];
+}
 
 include './inc/header.php';
 ?>
@@ -167,6 +176,7 @@ include './inc/header.php';
                         <?php
                         $index=1;
                             foreach ($reservations as $reservation){
+
                                 $timestampStart = strtotime($reservation['start_event']);
                                 $timestampEnd = strtotime($reservation['end_event']);
                                 echo
@@ -178,10 +188,16 @@ include './inc/header.php';
                                         <td class="text-center">
                                            '.date('d.m.y H:i', $timestampStart).'  -  '.date('d.m.y H:i', $timestampEnd). '
                                         </td>
-                                        <td title="'.htmlspecialchars($reservation['description']).'">
-                                            '.htmlspecialchars($reservation['name']).'
-                                        </td>
-                                        <td>
+                                         <td>
+                                         <ul>';
+                                        foreach (json_decode($reservation['id_ser']) as $item){
+                                            $servis = getSerName($item, $db, $reservation['id_res']);
+                                            echo '<span><li title="'.$servis['description'].'">'.$servis['name'].'</li></span>';
+                                         }
+                                        echo'
+                                            </ul>
+                                            </td>
+                                            <td>
                                             '.htmlspecialchars($reservation['comment']).'
                                         </td>
                                         <td class="text-center">';

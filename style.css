@@ -1552,7 +1552,9 @@ ul {
     height: 110px;
     padding: 15px; }
 
-
+.multiselect-container>li>a>label {
+  padding: 4px 20px 3px 20px;
+}
 
 
 /*# sourceMappingURL=style.css.map */

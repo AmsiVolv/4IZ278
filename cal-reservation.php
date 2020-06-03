@@ -34,8 +34,13 @@ $services=$servicesQuery->fetchAll();
         document.addEventListener('DOMContentLoaded', function() {
 
             $("input").on( "click", function() {
-               $('#radioValue').val(($("input:checked").val()));
-            });
+                var checked = [];
+                $('input:checkbox:checked').each(function() {
+                    checked.push($(this).val());
+                    console.log(JSON.stringify(checked));
+               $('#radioValue').val(checked);
+               console.log($('#radioValue'));
+            })});
 
             var isAllDay = false;
             var today = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -169,7 +174,7 @@ $services=$servicesQuery->fetchAll();
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Chose a date</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -188,7 +193,7 @@ $services=$servicesQuery->fetchAll();
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Chose a service</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -202,7 +207,7 @@ $services=$servicesQuery->fetchAll();
                     foreach ($services as $service){
                         echo '
                            <div>
-                            <input type="radio" name="service"  value="'.htmlspecialchars(@$service['name']).'" id="'.htmlspecialchars(@$service['name']).'">
+                            <input type="checkbox" name="service"  value="'.htmlspecialchars(@$service['id_ser']).'" id="'.htmlspecialchars(@$service['id_ser']).'">
                             <label for="'.htmlspecialchars(@$service['name']).'">'.htmlspecialchars(@$service['name']).'</label>
                           </div>
                         ';

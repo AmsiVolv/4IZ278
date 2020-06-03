@@ -7,30 +7,33 @@ if(empty($_SESSION['user_id'])){
     $login = true;
 }
 
-if($login){
-    if(isset($_POST)){
-        if(checkCSRF('/4IZ278/cal-reservation.php', $_POST['csrf'])){
-        $errors = [];
-
-        #region zpracování formuláře
-        #region kontrola sluzby
-        $serviceName = trim(@$_POST['serName']);
-        if (empty($serviceName)){
-            $errors['service']='Service name is not correct.';
-        }else{
+#region zpracování formuláře
+#region kontrola sluzby
+if($login) {
+    if (isset($_POST)) {
+        if (checkCSRF('/4IZ278/cal-reservation.php', $_POST['csrf'])) {
+            $errors = [];
+            $id_ser=[];
+            if(preg_match('/^[0-9,]+$/',$_POST['serName'])){
+                $arraySerId = explode(',', $_POST['serName']);
+                foreach ($arraySerId as $value){
             #kontrola existence sluzby
-            $serviseQuery=$db->prepare('SELECT * FROM services_sem WHERE name=:name LIMIT 1;');
-            $serviseQuery->execute([
-                ':name'=>$serviceName
-            ]);
-            if($serviseQuery->rowCount()>0){
-                $id_ser=$serviseQuery->fetch();
+                $serviseQuery = $db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
+                $serviseQuery->execute([
+                    ':id' => $value
+                    ]);
+                if ($serviseQuery->rowCount() > 0) {
+                    array_push($id_ser,$value);
+                } else {
+                    $errors['service'] = 'Service name is not correct.';
+                    var_dump($errors);
+             #endregion kontrola existence sluzby
+                }
+              }
             }else{
-                $errors['service']='Service name is not correct.';
+                 $errors['id']='Invalid service ID';
             }
-            #endregion kontrola existence sluzby
-        }
-        #endregion kontrola sluzby
+
 
         #kontrola datumu
         if (DateTime::createFromFormat('Y-m-d H:i:s', $_POST['start']) !== FALSE) {
@@ -78,7 +81,7 @@ if($login){
                 ':start_event'=>$_POST['start'],
                 ':end_event'=>$_POST['end'],
                 ':id_user'=>$_SESSION['user_id'],
-                ':id_ser'=>$id_ser['id_ser'],
+                ':id_ser'=>json_encode($id_ser),
                 ':description'=> $description
             ]);
             $_SESSION['success']='You just made your reservation';

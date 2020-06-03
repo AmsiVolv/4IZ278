@@ -33,24 +33,24 @@ if(isset($_GET)){
                 ':id'=>$id,
                 'id_user'=>$_SESSION['user_id']
             ]);
-            $reservation=$reservationQuery->fetch();
+            $reservations=$reservationQuery->fetch();
             if($reservationQuery->rowCount()<1){
                 $errors['reservation'] = 'This reservation does not exist.';
                 $_SESSION['errors'] = $errors;
                 header('Location: personal.php');
             };
-            if($reservation['id_user']!=$_SESSION['user_id']){
+            if($reservations['id_user']!=$_SESSION['user_id']){
                 if(!$isAdmin){
                     $errors['reservation'] = 'It is not your reservation';
                     $_SESSION['errors'] = $errors;
                     header('Location: personal.php');
                 }else{
                     $ediable = true;
-                    $_SESSION['id_res']=$reservation['id_res'];
+                    $_SESSION['id_res']=$reservations['id_res'];
                 }
             }else{
                 $ediable=true;
-                $_SESSION['id_res']=$reservation['id_res'];
+                $_SESSION['id_res']=$reservations['id_res'];
             }
 
         }else{
@@ -91,7 +91,7 @@ if($ediable){
 #endregion mazani/editace prispevku
 
 #dostaneme timestamp rezervace
-$timestampStart = strtotime($reservation['start_event']);
+$timestampStart = strtotime($reservations['start_event']);
 #konec timestamp
 
 #nadefinujeme array z hodnotami casu rezervace
@@ -120,8 +120,10 @@ function strTime($a, $b){
 
 #region zpracovani formulare
 $errorsForm=[];
+$notFree=false;
+$id_ser=[];
 if(!empty($_POST) and empty($errors)){
-    if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])) {
+//    if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])) {
         #kontrola pomoci regilarniho vyrazu datum a cas
         if (preg_match('/[0-9-]{10} [0-9:]{8}/', $_POST['date'] . ' ' . $_POST['time'])) {
             $time = strtotime($_POST['date'] . ' ' . $_POST['time']);
@@ -140,19 +142,24 @@ if(!empty($_POST) and empty($errors)){
         #konec kontroly popisu
 
         #region kontrola sluzby
-        $serviceId = trim(@$_POST['service']);
-        if (empty($serviceId)) {
-            $errors['service'] = 'Service name is not correct.';
-        } else {
-            #kontrola existence sluzby
-            $serviseQuery = $db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
-            $serviseQuery->execute([
-                ':id' => $serviceId
-            ]);
-            if ($serviseQuery->rowCount() <= 0) {
-                $errors['service'] = 'Service name is not correct.';
+        if(preg_match('/^[0-9,]+$/',$_POST['serName'])){
+            $arraySerId = explode(',', $_POST['serName']);
+            foreach ($arraySerId as $value){
+                #kontrola existence sluzby
+                $serviseQuery = $db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
+                $serviseQuery->execute([
+                    ':id' => $value
+                ]);
+                if ($serviseQuery->rowCount() > 0) {
+                    array_push($id_ser,$value);
+                } else {
+                    $errors['service'] = 'Service name is not correct.';
+                    var_dump($errors);
+                    #endregion kontrola existence sluzby
+                }
             }
-            #endregion kontrola existence sluzby
+        }else{
+            $errors['id']='Invalid service ID';
         }
         #endregion kontrola sluzby
 
@@ -192,20 +199,59 @@ if(!empty($_POST) and empty($errors)){
                 ':startTime' => $startTime,
                 ':endTime' => $endTime,
                 ':description' => $description,
-                ':id_ser' => $serviceId,
+                ':id_ser' => json_encode($id_ser),
                 ':id' => $_SESSION['id_res']
             ]);
             unset($_SESSION['id_res']);
             $_SESSION['success'] = 'You just update your reservation!';
             header('Location: personal.php');
         }
-    }else{
-        $errorsForm['csrf']='Invalid CSRF token.';
     }
+//else{
+//        $errorsForm['csrf']='Invalid CSRF token.';
+//    }
+//}
+function getSerName($a, $db, $resID){
+    $selectServices=$db->prepare('SELECT * FROM reservation_sem JOIN services_sem ON services_sem.id_ser=:id WHERE reservation_sem.id_res=:id_res LIMIT 1;');
+    $selectServices->execute([
+        ':id'=>$a,
+        ':id_res'=>$resID
+    ]);
+    $services=$selectServices->fetchAll(PDO::FETCH_ASSOC);
+    return $services[0];
 }
+
+
 #endregion zpracovani formulare
 include './inc/header.php';
 ?>
+<script>
+    $( document ).ready(function() {
+        $( window ).load(function() {
+            let checked = [];
+            $('input:checkbox:checked').each(function() {
+                checked.push($(this).val());
+                $('#radioValue').val(checked);
+            });
+           $('input:checkbox').each(function () {
+               if($(this).attr("checked") != 'checked') {
+                    checked.forEach((element) => {
+                        if(element ===$(this).val()){
+                            $(this).closest('.element').remove();
+                        };
+                    })
+               }
+           });
+        });
+
+        $("input").on( "click", function() {
+            let checked = [];
+            $('input:checkbox:checked').each(function() {
+                checked.push($(this).val());
+                $('#radioValue').val(checked);
+            })});
+    });
+</script>
 <div class="section-heading">
     <h2>Edit reservation</h2>
     <div class="line"></div>
@@ -265,23 +311,16 @@ include './inc/header.php';
                                             <label for="description">
                                                 Description:
                                             </label>
-                                            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars(@$reservation['comment']); ?>" placeholder="<?php echo htmlspecialchars(@$reservation['comment']); ?>">
+                                            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars(@$reservations['comment']); ?>" placeholder="<?php echo htmlspecialchars(@$reservation['comment']); ?>">
                                         </div>
                                         <div class="col-md-3">
                                             <label for="service">
                                                 Service:
                                             </label>
-                                            <select name="service" id="serviceSelect" class="form-control">
-                                                <?php
-                                                foreach ($services as $service){
-                                                    if($service['id_ser']===$reservation['id_ser']){
-                                                        echo '<option selected value="'.htmlspecialchars($service['id_ser']).'">'.htmlspecialchars($service['name']).'</option>';
-                                                    }else{
-                                                        echo '<option value="'.htmlspecialchars($service['id_ser']).'">'.htmlspecialchars($service['name']).'</option>';
-                                                    }
-                                                }
-                                                ?>
-                                            </select>
+                                            <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#serviceModalWindow">
+                                                Choose a service
+                                            </button>
+                                            <input type="hidden" id="radioValue" name="serName" value="<?php echo htmlspecialchars(@$_POST['serName']);?>">
                                         </div>
                                     </div>
                                 </div>
@@ -303,6 +342,50 @@ include './inc/header.php';
         </div>
     </div>
 </div>
+
+<!-- Second modal window -->
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="serviceModalWindow">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Chose a service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id='service' class="col-12 col-md-12">
+                <div class="text-center">
+                    <h4 class="text-dark mb-4">You can choose one service from this list</h4>
+                </div>
+                    <?php
+
+                    foreach (json_decode($reservations['id_ser']) as $item)
+                    {
+                        $servis = getSerName($item, $db, $reservations['id_res']);
+                        echo '                          
+                          <div class="element">
+                           <input checked="checked" type="checkbox" name="service"  value="'.htmlspecialchars(@$servis['id_ser']).'" id="'.htmlspecialchars(@$servis['id_ser']).'">
+                           <label for="'.htmlspecialchars(@$servis['name']).'">'.htmlspecialchars(@$servis['name']).'</label>
+                          </div>';
+                    }
+                    foreach ($services as $service)
+                    {
+                        echo '                          
+                          <div class="element">
+                           <input type="checkbox" name="service"  value="'.htmlspecialchars(@$service['id_ser']).'" id="'.htmlspecialchars(@$service['id_ser']).'">
+                           <label for="'.htmlspecialchars(@$service['name']).'">'.htmlspecialchars(@$service['name']).'</label>
+                          </div>';
+                    }
+                    ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Second modal window end-->
 
 <?php
 include 'inc/footer.php';
