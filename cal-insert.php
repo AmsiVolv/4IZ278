@@ -11,7 +11,7 @@ if(empty($_SESSION['user_id'])){
 #region kontrola sluzby
 if($login) {
     if (isset($_POST)) {
-        if (checkCSRF('/4IZ278/cal-reservation.php', $_POST['csrf'])) {
+        if (checkCSRF($_POST['csrfLocation'], $_POST['csrf'])) {
             $errors = [];
             $id_ser=[];
             if(preg_match('/^[0-9,]+$/',$_POST['serName'])){

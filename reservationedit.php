@@ -123,7 +123,7 @@ $errorsForm=[];
 $notFree=false;
 $id_ser=[];
 if(!empty($_POST) and empty($errors)){
-//    if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])) {
+  if(checkCSRF($_SERVER['PHP_SELF'], $_POST['csrf'])) {
         #kontrola pomoci regilarniho vyrazu datum a cas
         if (preg_match('/[0-9-]{10} [0-9:]{8}/', $_POST['date'] . ' ' . $_POST['time'])) {
             $time = strtotime($_POST['date'] . ' ' . $_POST['time']);
@@ -141,27 +141,26 @@ if(!empty($_POST) and empty($errors)){
         }
         #konec kontroly popisu
 
-        #region kontrola sluzby
-        if(preg_match('/^[0-9,]+$/',$_POST['serName'])){
-            $arraySerId = explode(',', $_POST['serName']);
-            foreach ($arraySerId as $value){
-                #kontrola existence sluzby
-                $serviseQuery = $db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
-                $serviseQuery->execute([
-                    ':id' => $value
-                ]);
-                if ($serviseQuery->rowCount() > 0) {
-                    array_push($id_ser,$value);
-                } else {
-                    $errors['service'] = 'Service name is not correct.';
-                    var_dump($errors);
-                    #endregion kontrola existence sluzby
-                }
-            }
-        }else{
-            $errors['id']='Invalid service ID';
-        }
-        #endregion kontrola sluzby
+      #kontrola sluzby
+      if(preg_match('/^[0-9,]+$/',$_POST['serName'])){
+          $arraySerId = explode(',', $_POST['serName']);
+          foreach ($arraySerId as $value){
+              #kontrola existence sluzby
+              $serviseQuery = $db->prepare('SELECT * FROM services_sem WHERE id_ser=:id LIMIT 1;');
+              $serviseQuery->execute([
+                  ':id' => $value
+              ]);
+              if ($serviseQuery->rowCount() > 0) {
+                  array_push($id_ser,$value);
+              } else {
+                  $errors['service'] = 'Service name is not correct.';
+                  var_dump($errors);
+                  #endregion kontrola existence sluzby
+              }
+          }
+      }else{
+          $errors['id']='Invalid service ID';
+      }
 
         #dalsi kontrola datumu
         #pokud neni mensi nez dnesni datum
@@ -207,10 +206,10 @@ if(!empty($_POST) and empty($errors)){
             header('Location: personal.php');
         }
     }
-//else{
-//        $errorsForm['csrf']='Invalid CSRF token.';
-//    }
-//}
+else{
+        $errorsForm['csrf']='Invalid CSRF token.';
+    }
+}
 function getSerName($a, $db, $resID){
     $selectServices=$db->prepare('SELECT * FROM reservation_sem JOIN services_sem ON services_sem.id_ser=:id WHERE reservation_sem.id_res=:id_res LIMIT 1;');
     $selectServices->execute([
@@ -311,7 +310,7 @@ include './inc/header.php';
                                             <label for="description">
                                                 Description:
                                             </label>
-                                            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars(@$reservations['comment']); ?>" placeholder="<?php echo htmlspecialchars(@$reservation['comment']); ?>">
+                                            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars(@$reservations['comment']); ?>" placeholder="<?php echo htmlspecialchars(@$reservations['comment']); ?>">
                                         </div>
                                         <div class="col-md-3">
                                             <label for="service">
@@ -325,10 +324,10 @@ include './inc/header.php';
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary" name="submit" id="submit">
                                         Submit
                                     </button>
-                                    <button name="submit" id="submit" type="submit" class="btn btn-secondary">
+                                    <button type="submit" class="btn btn-secondary">
                                         <a class="text-decoration-none text-white" href="personal.php?old=false"">Cancel</a>
                                     </button>
                                 </div>

@@ -156,3 +156,10 @@ include './inc/header.php';
             </form>
         </div>
 
+
+<?php
+include 'inc/footer.php';
+?>
+</body>
+
+</html>

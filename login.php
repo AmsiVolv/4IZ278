@@ -89,4 +89,11 @@ include 'inc/header.php';
     </div>
     <!-- Form end -->
 </div>
+<!-- ***** Blog Area End ***** -->
 
+<?php
+include 'inc/footer.php';
+?>
+</body>
+
+</html>

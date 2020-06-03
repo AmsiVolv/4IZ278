@@ -2,7 +2,7 @@
 $isAdmin = false;
 $pageTitle = 'Blog page';
 require_once './inc/clasees/PostsMain.php';
-require_once 'inc/user.php';
+
 
 if(!$isAdmin){
     $isAdmin = false;

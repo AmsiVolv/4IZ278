@@ -1,5 +1,10 @@
 <?php
+$isAdmin = false;
 require_once './inc/user.php';
+
+if ($isAdmin) {
+    $isAdmin=true;
+}
 
 ?>
 <!DOCTYPE html>
@@ -10,6 +15,7 @@ require_once './inc/user.php';
     <meta name="description" content="Dento - Dentist &amp; Medical HTML Template">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
 
     <!-- Title -->
     <title><?php echo (!empty($pageTitle)?$pageTitle.' - ':'')?>Dento</title>
@@ -50,6 +56,11 @@ require_once './inc/user.php';
                             echo '<strong>'.htmlspecialchars($_SESSION['user_name']).'</strong>';
                             echo ' - ';
                             echo '<a href="logout">Log out</a>';
+                            if($isAdmin){
+                                echo '<button class="btn-success ml-5"><a href="adminpanel.php">
+                                        Admin panel
+                                      </a></button>';
+                            }
                         }else{
                             echo '<a href="login">Log in</a>';
                         }
@@ -105,8 +116,8 @@ require_once './inc/user.php';
                     }else{
                         echo '<a href="./signup" class="btn dento-btn booking-btn">Registr now</a>';
                     }
+                    echo ' <a href="./cal-reservation" class="btn dento-btn booking-btn registr">Booking Now</a>';
                     ?>
-                    <a href="./cal-reservation" class="btn dento-btn booking-btn registr">Booking Now</a>
                 </nav>
             </div>
         </div>
@@ -126,6 +137,3 @@ require_once './inc/user.php';
 <!-- Active js -->
 <script src="js/default-assets/active.js"></script>
 
-</body>
-
-</html>

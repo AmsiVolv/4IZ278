@@ -1,7 +1,7 @@
 <?php
 $isAdmin = false;
 $pageTitle = 'Reservation';
-require_once 'inc/user.php';
+
 
 #kontrolujeme pokud je adminem
 if ($isAdmin) {
@@ -37,9 +37,7 @@ $services=$servicesQuery->fetchAll();
                 var checked = [];
                 $('input:checkbox:checked').each(function() {
                     checked.push($(this).val());
-                    console.log(JSON.stringify(checked));
                $('#radioValue').val(checked);
-               console.log($('#radioValue'));
             })});
 
             var isAllDay = false;
@@ -128,6 +126,7 @@ $services=$servicesQuery->fetchAll();
                                     <form action="cal-insert.php" method="post" name="calInsertForm">
                                         <!-- Button trigger modal -->
                                         <input type="hidden" name="csrf" value="<?php echo (getCSRF($_SERVER['PHP_SELF'])); ?>">
+                                        <input type="hidden" name="csrfLocation" value="<?php echo $_SERVER['PHP_SELF']?>">
                                         <div class="form-group  text-center mb-lg-3 mt-lg-3">
                                             <button type="button" class="showMe btn btn-light" data-toggle="modal" data-target="#calendarModalWindow">
                                                 Choose a date <i class="fa fa-calendar"></i>
