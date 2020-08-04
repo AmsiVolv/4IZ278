@@ -135,7 +135,7 @@ if(!empty($_POST) and empty($errors)){
         #endregion kontrola datumu
 
         #kontrola popisu
-        $description = htmlspecialchars(trim(@$_POST['description']));
+        $description = trim(@$_POST['description']);
         if (strlen($description) > 255) {
             $errors['description'] = 'Max number of symbols - 255';
         }
